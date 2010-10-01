@@ -22,11 +22,11 @@ function(object,data,cls=NULL,...){
 	if(length(b)==1) b<-rep(b,length=k)
 	if (length(a)==1) a<-matrix(a,k,max(d))
 	else if (length(a)==k) a<-matrix(a,k,max(d))
-	else if (object$model=='AIBQD') a<-matrix(a,k,d[1],byrow=TRUE)
+	else if (object$model=='AJBQD') a<-matrix(a,k,d[1],byrow=TRUE)
 	
 	b[b<1e-10]<-1e-10
 	
-	if(object$model=="AIBQD") {
+	if(object$model=="AJBQD") {
 		K<-diag((mu%*%Q%*%diag(1/a[1,1:d[1]],d[1]))%*%(t(Q)%*%t(mu)))-2*(mu%*%Q%*%diag(1/a[1,1:d[1]],d[1]))%*%(t(Q)%*%t(x))+1/b[1]*(diag(tcrossprod(mu))-2*mu%*%t(x)+2*(mu%*%Q)%*%(t(Q)%*%t(x))-diag(tcrossprod(mu%*%Q)))-2*log(c(prop))
 	}
 	else if (object$model=="ABQD") {

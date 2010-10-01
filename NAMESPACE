@@ -3,7 +3,7 @@ importFrom(stats,predict)
 importFrom(graphics,plot)
 importFrom(MASS,mvrnorm)
 
-export(hdda,hddc,simuldata)
+export(hdda,hddc,simuldata,demo_hddc)
 
 S3method(predict,hdc)
 S3method(plot,hdc)

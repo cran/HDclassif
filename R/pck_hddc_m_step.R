@@ -11,7 +11,7 @@ function(x,k,t,model,threshold,dfixed,graph){
 	#calcul des matrices de variances/covariances
 	
 	if (N<p) {
-		if(model=="AIBQD" | model=="ABQD"){
+		if(model=="AJBQD" | model=="ABQD"){
 			Y<-matrix(0,N,p)
 			for (i in 1:k) Y<-Y+(x-matrix(mu[i,],N,p,byrow=TRUE))/sqrt(N)*sqrt(t[,i])
 			donnees<-eigen(tcrossprod(Y),symmetric=TRUE)
@@ -29,7 +29,7 @@ function(x,k,t,model,threshold,dfixed,graph){
 			}
 		}
 	}
-	else if (model=="AIBQD" | model=="ABQD"){
+	else if (model=="AJBQD" | model=="ABQD"){
 		W<-matrix(0,p,p)
 		for (i in 1:k) W<-W+crossprod((x-matrix(mu[i,],N,p,byrow=TRUE))*sqrt(t[,i]))/N
 		donnees<-eigen(W,symmetric=TRUE)
@@ -47,32 +47,30 @@ function(x,k,t,model,threshold,dfixed,graph){
 	
 	#détermination de la dimension
 	
-	if (model=='AKIBKQKD'|model=='AKBKQKD'|model=='ABKQKD'|model=='AKIBQKD'|model=='AKBQKD'|model=='ABQKD'|model=="AIBQD" | model=="ABQD") {
+	if (model=='AKJBKQKD'|model=='AKBKQKD'|model=='ABKQKD'|model=='AKJBQKD'|model=='AKBQKD'|model=='ABQKD'|model=="AJBQD" | model=="ABQD") {
 		d<-rep(dfixed,length=k)
 	}
 	else{ 
 		x<-abs(t(diff(t(ev))))
 		nbis<-ncol(x)
 		d<-maxi<-Nmax<-c()
-		for (i in 1:k) Nmax[i]<-max(min(floor(n[i]-2),p-2),2)
-		for (i in 1:k) for (j in Nmax[i]:1) {
-			maxi[i]<-max(x[i,1:Nmax[i]])
-			if (x[i,j]>=threshold*maxi[i]) {
-				d[i]<-j
-				break
-			} 
-			else if(j==1) d[i]<-1
+		if (p==2) d=rep(1,k)
+		else{
+			for (i in 1:k){
+				Nmax[i]<-max(min(floor(n[i]-2),p-2),2)
+				d[i]<-max(which(x[i,1:Nmax[i]]>=threshold*max(x[i,1:Nmax[i]])))
+			}
 		}
 	}
 	
 	#mise en place des matrices Qi
 	
-	if (model=="AIBQD" |model=="ABQD"){
-		if (N>=p) Q<-matrix(donnees$vectors[,1:d],p,d)
+	if (model=="AJBQD" |model=="ABQD"){
+		if (N>=p) Q<-matrix(donnees$vectors[,1:d[1]],p,d[1])
 		else {
-			Q<-matrix(t(Y)%*%donnees$vectors[,1:d],p,d)
+			Q<-matrix(t(Y)%*%donnees$vectors[,1:d[1]],p,d[1])
 			normalise<-c()
-			for(i in 1:d) normalise[i]<-as.double(crossprod(Q[,i]))
+			for(i in 1:d[1]) normalise[i]<-as.double(crossprod(Q[,i]))
 			Q<-Q/matrix(sqrt(normalise),p,d,byrow=TRUE)		
 		}
 	}
@@ -89,14 +87,14 @@ function(x,k,t,model,threshold,dfixed,graph){
 	#calcul des paramètres	
 	
 	ai<-matrix(NA,k,max(d))
-	if (model=='AKIBKQKDK' | model=='AKIBQKDK' | model=='AKIBKQKD' | model=='AKIBQKD' ){
+	if (model=='AKJBKQKDK' | model=='AKJBQKDK' | model=='AKJBKQKD' | model=='AKJBQKD' ){
 		for (i in 1:k) ai[i,1:d[i]]<-ev[i,1:d[i]]
 	}
 	else if (model=='AKBKQKDK' | model=='AKBQKDK' | model=='AKBKQKD' | model=='AKBQKD'){
 		for (i in 1:k) ai[i,]<-rep(sum(ev[i,1:d[i]])/d[i],length=max(d))
 	}
-	else if (model=="AIBQD") for (i in 1:k) ai[i,]<-ev[1:d]
-	else if (model=="ABQD")	ai[]<-sum(ev[1:d])/d
+	else if (model=="AJBQD") for (i in 1:k) ai[i,]<-ev[1:d[1]]
+	else if (model=="ABQD")	ai[]<-sum(ev[1:d[1]])/d[1]
 	else {
 		a<-eps<-0
 		for (i in 1:k) {
@@ -108,14 +106,14 @@ function(x,k,t,model,threshold,dfixed,graph){
 	}
 
 	bi<-c()
-	if (model=='AKIBKQKDK'|model=='AKBKQKDK'|model=='ABKQKDK'|model=='AKIBKQKD'|model=='AKBKQKD'|model=='ABKQKD'){
+	if (model=='AKJBKQKDK'|model=='AKBKQKDK'|model=='ABKQKDK'|model=='AKJBKQKD'|model=='AKBKQKD'|model=='ABKQKD'){
 		if (N>=p) for(i in 1:k) bi[i]<-sum(ev[i,(d[i]+1):p])/(p-d[i])
 		else for(i in 1:k) bi[i]<-sum(ev[i,(d[i]+1):N])/(p-d[i])
 	}
-	else if (model=="ABQD" | model=="AIBQD"){
-		if (N>=p) bi[1:k]<-sum(ev[(d+1):p])/(p-d)
-		else bi[1:k]<-sum(ev[(d+1):N])/(p-d)
-		d<-rep(d,k)
+	else if (model=="ABQD" | model=="AJBQD"){
+		if (N>=p) bi[1:k]<-sum(ev[(d[1]+1):p])/(p-d[1])
+		else bi[1:k]<-sum(ev[(d[1]+1):N])/(p-d[1])
+		d<-rep(d[1],k)
 	}
 	else{
 		b<-eps<-0

@@ -46,15 +46,20 @@ X<-datas$X
 clx<-datas$clx
 Y<-datas$Y
 cly<-datas$cly
-prms1=hddc(X,k=3,graph=TRUE,algo="CEM",init='param')                 #clustering of datahdlearn
-prms1$class                                                          #class vector obtained by the clustering
-res1=predict(prms1,X,clx)                                            #only to see the good classification rate and the confusion matrix
-res2=predict(prms1,Y)         
-res2$class                                                           #the class predicted using hddc parameters on the test dataset
+#clustering of the gaussian dataset:
+prms1=hddc(X,k=3,graph=TRUE,algo="CEM",init='param')                 
+#class vector obtained by the clustering:
+prms1$class                                     
+#only to see the good classification rate and the confusion matrix:                     
+res1=predict(prms1,X,clx)                                            
+res2=predict(prms1,Y)       
+#the class predicted using hddc parameters on the test dataset:  
+res2$class                                                           
 
 # Example 2 :
 data(Crabs)
-prms3=hddc(Crabs[,-1],k=4,graph=TRUE,algo="EM",init='kmean')         #clustering of the Crabs dataset
+#clustering of the Crabs dataset:
+prms3=hddc(Crabs[,-1],k=4,graph=TRUE,algo="EM",init='kmeans')        
 res3=predict(prms3,Crabs[,-1],Crabs[,1])
 
 }

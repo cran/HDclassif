@@ -1,5 +1,5 @@
 pck_hdda_tclass <-
-function(cls,cls2){
+function(cls,cls2,confusion=TRUE){
 	u<-as.matrix(sort(unique(cls)))
 	k<-length(u)
 	u2<-as.matrix(sort(unique(cls2)))
@@ -43,7 +43,7 @@ function(cls,cls2){
 		}
 		comp<-matrix(comp,k,k,dimnames=list('Predicted class'=name,'Initial class'=u[1:k]))
 		cat("Correct classification rate :",total/length(y),".\n")
-		print(comp)
+		if (confusion) print(comp)
 	}
 }
 

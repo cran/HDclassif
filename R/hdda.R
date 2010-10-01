@@ -1,6 +1,6 @@
 hdda <-
-function(data,cls,model='AkiBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,show=TRUE,scaling=FALSE){
-	Mod<-c("AKIBKQKDK","AKBKQKDK","ABKQKDK","AKIBQKDK","AKBQKDK","ABQKDK","AKIBKQKD","AKBKQKD","ABKQKD","AKIBQKD","AKBQKD","ABQKD","AIBQD","ABQD","DBEST","BEST")
+function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,show=TRUE,scaling=FALSE){
+	Mod<-c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD","DBEST","BEST")
 	model=toupper(model)
 	if (any(Mod==model)==0) stop("Error : invalid model name\n",.Call=FALSE)
 	else if (is.numeric(threshold)==0) stop("Error : the parameter 'threshold' must a double strictly within ]0,1[\n",.Call=FALSE)
@@ -24,7 +24,7 @@ function(data,cls,model='AkiBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,show=T
 	if (model=='BEST' | model=='DBEST') {
 		if (model=='DBEST' && is.numeric(d) && (length(d)!=1 || d>((N<p)*(N-1)+(N>=p)*(p-1)))) cat("Error : in order to run this model, d must be an integer stricly inferior \nto the dimension (or the number of observations), which is in this case :",((N<p)*(N-1)+(N>=p)*(p-1)),"\n")
 		else{
-			Mod2<-c("AKIBKQKDK","AKBKQKDK ","ABKQKDK  ","AKIBQKDK ","AKBQKDK  ","ABQKDK   ","AKIBKQKD ","AKBKQKD  ","ABKQKD   ","AKIBQKD  ","AKBQKD   ","ABQKD    ","AIBQD    ","ABQD     ")
+			Mod2<-c("AKJBKQKDK","AKBKQKDK ","ABKQKDK  ","AKJBQKDK ","AKBQKDK  ","ABQKDK   ","AKJBKQKD ","AKBKQKD  ","ABKQKD   ","AKJBQKD  ","AKBQKD   ","ABQKD    ","AJBQD    ","ABQD     ")
 			e<-vector(mode="list",length=8)
 			BIC<-c()
 			if (model=='DBEST') {
@@ -51,6 +51,7 @@ function(data,cls,model='AkiBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,show=T
 				if (show) cat('\t',Mod2[14],'\t',BIC[8],'\n')
 			}
 			prms<-e[[which.max(BIC)]]
+			if (show) cat("\nSELECTED : Model ",prms$model,"\n",sep="")
 			prms$BIC<-max(BIC)
 			prms$scaling<-scaling
 			class(prms)<-'hdc'

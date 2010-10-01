@@ -1,6 +1,6 @@
 pck_hddc <-
-function(DATA,k,model,threshold,dfixed,graph,algo,iter.max,eps,init,mini.nb,ctrl){ 
-	Mod<-c("AKIBKQKDK","AKBKQKDK","ABKQKDK","AKIBQKDK","AKBQKDK","ABQKDK","AKIBKQKD","AKBKQKD","ABKQKD","AKIBQKD","AKBQKD","ABQKD","AIBQD","ABQD")
+function(DATA,k,model,threshold,dfixed,graph,algo,itermax,eps,init,mini.nb,ctrl,...){ 
+	Mod<-c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD")
 	p<-ncol(DATA)
 	N<-nrow(DATA)
 	if ( any(model==Mod[7:14]) && length(dfixed)==0 ) dfixed<-pck_hddc_dim(DATA,k,threshold)
@@ -29,7 +29,7 @@ function(DATA,k,model,threshold,dfixed,graph,algo,iter.max,eps,init,mini.nb,ctrl
 			}
 			else d<-dfixed
 			a<-ev[1:d]
-			b<-sum(ev[(d+1):p])/(p-d)
+			b<-sum(ev[(d[1]+1):p])/(p-d[1])
 			
 			Q<-donnees$vectors[,1:d]
 			mu<-mvrnorm(k,MU,S)
@@ -39,8 +39,15 @@ function(DATA,k,model,threshold,dfixed,graph,algo,iter.max,eps,init,mini.nb,ctrl
 			t<-matrix(0,N,k)
 			for (i in 1:k) t[,i]=1/rowSums(exp((K[i,]-t(K))/2))
 		}
-		else if (init=='kmean') {
-			cluster<-kmeans(DATA,k,iter.max=100,nstart=4)$cluster
+		else if (toupper(init)=='KMEANS') {
+			mc<-match.call(expand.dots = FALSE)$...
+			if (is.null(mc$algorithm)) alg="Hartigan-Wong"
+			else alg=mc$algorithm
+			if (is.null(mc$iter.max)) im=100
+			else im=mc$iter.max
+			if (is.null(mc$nstart)) nst=4
+			else nst=mc$nstart
+			cluster<-kmeans(DATA,k,iter.max=im,nstart=nst,algorithm=alg)$cluster
 			for (i in 1:k) t[which(cluster==i),i]<-1
 		}
 		else if (init=='mini-em'){
@@ -62,7 +69,7 @@ function(DATA,k,model,threshold,dfixed,graph,algo,iter.max,eps,init,mini.nb,ctrl
 	likely<-c()
 	I<-0
 	test<-Inf
-	while (I<iter.max && test>eps){
+	while (I<itermax && test>eps){
 		I<-I+1
 		if (algo!='EM' && I!=1) t<-t2
 		if (k>1 && (any(is.na(t)) || any(colSums(t>1/k)<=ctrl*N/100))) return(1)
@@ -94,15 +101,15 @@ function(DATA,k,model,threshold,dfixed,graph,algo,iter.max,eps,init,mini.nb,ctrl
 	if (model=='AKBKQKDK' | model=='AKBQKDK' | model=='AKBKQKD' | model=='AKBQKD') {
 		a<-matrix(m$a[,1],1,m$k,dimnames=list(c("Ak :"),1:m$k))
 	}
-	else if(model=='AIBQD') {
-		a<-matrix(m$a[1,],1,m$d[1],dimnames=list(c('Ai :'),paste('a',1:m$d[1],sep='')))
+	else if(model=='AJBQD') {
+		a<-matrix(m$a[1,],1,m$d[1],dimnames=list(c('Aj :'),paste('a',1:m$d[1],sep='')))
 	}
 	else if (model=='ABKQKDK' | model=='ABQKDK' | model=='ABKQKD' | model=='ABQKD'|model=="ABQD") {
 		a<-matrix(m$a[1],dimnames=list(c('A :'),c('')))
 	}
 	else a<-matrix(m$a,m$k,max(m$d),dimnames=list('Class'=1:m$k,paste('a',1:max(m$d),sep='')))
 	
-	if (model=='AKIBQKDK'|model=='AKBQKDK'|model=='ABQKDK'|model=='AKIBQKD'|model=='AKBQKD'|model=='ABQKD' |model=='AIBQD'|model=="ABQD") {
+	if (model=='AKJBQKDK'|model=='AKBQKDK'|model=='ABQKDK'|model=='AKJBQKD'|model=='AKBQKD'|model=='ABQKD' |model=='AJBQD'|model=="ABQD") {
 		b<-matrix(m$b[1],dimnames=list(c('B :'),c('')))
 	}
 	else b<-matrix(m$b,1,m$k,dimnames=list(c("Bk :"),1:m$k))

@@ -12,7 +12,7 @@ function(x,par){
 	
 	b[b<1e-10]<-1e-10
 
-	if(par$model=="AIBQD") {
+	if(par$model=="AJBQD") {
 		K<-diag((mu%*%Q%*%diag(1/a[1,1:d[1]],d[1]))%*%(t(Q)%*%t(mu)))-2*(mu%*%Q%*%diag(1/a[1,1:d[1]],d[1]))%*%(t(Q)%*%t(x))+1/b[1]*(diag(tcrossprod(mu))-2*mu%*%t(x)+2*(mu%*%Q)%*%(t(Q)%*%t(x))-diag(tcrossprod(mu%*%Q)))-2*log(c(prop))
 	}
 	else if(par$model=="ABQD") {

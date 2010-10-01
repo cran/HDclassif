@@ -44,8 +44,10 @@ data(wine)
 a <- wine[,-1]
 z <- wine[,1]
 prms1 <- hdda(a,z,model='best',scaling=TRUE,d="B")
-plot(prms1)                                        #the plot of Cattell's scree-test
-plot(prms1,0.05)                                   #it shows the dimension obtained with a 0.05 threshold
+#the plot of Cattell's scree-test with a threshold of 0.2:
+plot(prms1)     
+#it shows the dimension obtained with a 0.3 threshold:
+plot(prms1,0.3)                                    
 
 
 }

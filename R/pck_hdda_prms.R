@@ -14,7 +14,7 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 	#calcul des matrices de variances/covariances et des vecteurs propres
 	
 	if (N<p) {
-		if(model=="AIBQD" | model=="ABQD"){
+		if(model=="AJBQD" | model=="ABQD"){
 			Y<-matrix(0,N,p)
 			for (i in 1:k) Y[which(cls==i),]<-(DATA[which(cls==i),]-matrix(mu[i,],sum(cls==i),p,byrow=TRUE))/sqrt(N)
 			donnees<-eigen(tcrossprod(Y),symmetric=TRUE)
@@ -32,7 +32,7 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 			}
 		}
 	}
-	else if (model=="AIBQD" | model=="ABQD"){
+	else if (model=="AJBQD" | model=="ABQD"){
 		W<-matrix(0,p,p)
 		for (i in 1:k) W<-W+prop[i]*crossprod(DATA[which(cls==i),]-matrix(mu[i,],sum(cls==i),p,byrow=TRUE))/n[i]
 		donnees<-eigen(W,symmetric=TRUE)
@@ -50,13 +50,13 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 	
 	#calcul des dimensions + graphiques
 	
-	if (model=='AKIBKQKD'|model=='AKBKQKD'|model=='ABKQKD'|model=='AKIBQKD'|model=='AKBQKD'|model=='ABQKD') {
+	if (model=='AKJBKQKD'|model=='AKBKQKD'|model=='ABKQKD'|model=='AKJBQKD'|model=='AKBQKD'|model=='ABQKD') {
 		d<-rep(dfixed,length=k)
 		if (graph==TRUE) {
 			nbis<-ncol(ev)-1
 			x<-abs(t(diff(t(ev[,1:min(d[i]+21,nbis)]))))
 			x11()
-			par(mfrow=c(k*(k<=4)+4*(k>4),2*(1*(k%%4!=0)+floor(k/4))))
+			par(mfrow=c(k*(k<=4)+4*(k>4)-(any(k==c(5,6,10))),2*(1*(k%%4!=0)+floor(k/4))))
 			for (i in 1:k){	
 				sub1<-paste("Class #",i,", d",i,"=",d[i],sep="")
 				plot(ev[i,1:(min(d[i]+10,nbis))],type="h",col="green",main=paste("Ordered Eigen Values\nClass #",i,sep=""),xlab="",ylab="",lwd=3)
@@ -65,7 +65,7 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 			}
 		}
 	}
-	else if (model=="AIBQD" | model=="ABQD"){
+	else if (model=="AJBQD" | model=="ABQD"){
 		if (dfixed!='B'){
 			if (length(dfixed)==1 && is.numeric(dfixed)==1) d<-rep(dfixed,k)
 			else{
@@ -119,7 +119,7 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 		d<-rep(0,k)
 		if (graph){
 			x11()
-			par(mfrow=c(k*(k<=4)+4*(k>4),1*(k%%4!=0)+floor(k/4)))
+			par(mfrow=c(k*(k<=4)+4*(k>4)-(any(k==c(5,6,10))),1*(k%%4!=0)+floor(k/4)))
 		}
 		ev[ev<1e-10]=1e-10
 		for (i in 1:k) {
@@ -145,24 +145,23 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 		x<-abs(t(diff(t(ev))))
 		nbis<-ncol(x)
 		d<-maxi<-Nmax<-c()
-		for (i in 1:k) Nmax[i]<-max(min(floor(n[i]-2),p-2),2)
-		for (i in 1:k) for (j in Nmax[i]:1) {
-			maxi[i]<-max(x[i,1:Nmax[i]])
-			if (x[i,j]>=threshold*maxi[i]) {
-				d[i]<-j
-				break
-			} 
-			else if(j==1) d[i]<-1
+		if (p==2) d=rep(1,k)
+		else{
+			for (i in 1:k){
+				Nmax[i]<-max(min(floor(n[i]-2),p-2),2)
+				maxi[i]=threshold*max(x[i,1:Nmax[i]])
+				d[i]<-max(which(x[i,1:Nmax[i]]>=maxi[i]))
+			}
 		}
 
 		if (graph==TRUE) {
 			x11()
-			par(mfrow=c(k*(k<=4)+4*(k>4),2*(1*(k%%4!=0)+floor(k/4))))
+			par(mfrow=c(k*(k<=4)+4*(k>4)-(any(k==c(5,6,10))),2*(1*(k%%4!=0)+floor(k/4))))
 			for (i in 1:k){
 				sub1<-paste("Class #",i,", d",i,"=",d[i],sep="")
 				plot(ev[i,1:(min(d[i]+10,nbis))],type="h",col="green",main=paste("Ordered Eigen Values\nClass #",i,sep=""),xlab="",ylab="",lwd=3)
 				plot(x[i,1:(min(d[i]+10,Nmax[i]))],type="l",col="blue",main=paste("Cattell's Scree-Test\n",sub1,sep=""),ylab="",xlab="")
-				abline(h=threshold*maxi[i],lty=3)	
+				abline(h=maxi[i],lty=3)	
 				points(d[i],x[i,d[i]],col='red')
 			}
 		}
@@ -170,7 +169,7 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 	
 	#mise en place des matrices Qi
 	
-	if (model=="AIBQD" |model=="ABQD"){
+	if (model=="AJBQD" |model=="ABQD"){
 		if (N>=p) Q<-matrix(donnees$vectors[,1:d[1]],p,d[1])
 		else {
 			Q<-matrix(t(Y)%*%donnees$vectors[,1:d[1]],p,d[1])
@@ -191,16 +190,16 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 	
 	#calcul des paramètres
 	
-	if (model=='AKIBKQKDK' | model=='AKIBQKDK' | model=='AKIBKQKD' | model=='AKIBQKD' ){
-		ai<-matrix(NA,k,max(d),dimnames=list("Class"=kname,"Aki :"=paste("a",1:max(d),sep='')))
+	if (model=='AKJBKQKDK' | model=='AKJBQKDK' | model=='AKJBKQKD' | model=='AKJBQKD' ){
+		ai<-matrix(NA,k,max(d),dimnames=list("Class"=kname,"Akj :"=paste("a",1:max(d),sep='')))
 		for (i in 1:k) ai[i,1:d[i]]<-ev[i,1:d[i]]
 	}
 	else if (model=='AKBKQKDK' | model=='AKBQKDK' | model=='AKBKQKD' | model=='AKBQKD'){
 		ai<-matrix(NA,1,k,dimnames=list(c("Ak :"),kname))
 		for (i in 1:k) ai[i]<-sum(ev[i,1:d[i]])/d[i]
 	}
-	else if (model=="AIBQD"){
-		ai<-matrix(ev[1:d[1]],1,d[1],dimnames=list(c("Ai :"),paste('a',1:d[1],sep='')))
+	else if (model=="AJBQD"){
+		ai<-matrix(ev[1:d[1]],1,d[1],dimnames=list(c("Aj :"),paste('a',1:d[1],sep='')))
 	}
 	else if (model=="ABQD"){
 		ai<-matrix(sum(ev[1:d[1]])/d[1],dimnames=list(c("A :"),c('')))
@@ -214,12 +213,12 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 		ai<-matrix(a/eps,dimnames=list(c("A :"),c('')))
 	}
 	
-	if (model=='AKIBKQKDK'|model=='AKBKQKDK'|model=='ABKQKDK'|model=='AKIBKQKD'|model=='AKBKQKD'|model=='ABKQKD'){
+	if (model=='AKJBKQKDK'|model=='AKBKQKDK'|model=='ABKQKDK'|model=='AKJBKQKD'|model=='AKBKQKD'|model=='ABKQKD'){
 		bi<-matrix(NA,1,k,dimnames=list(c("Bk :"),kname))
 		if (N>=p) for(i in 1:k) bi[i]<-sum(ev[i,(d[i]+1):p])/(p-d[i])
 		else for(i in 1:k) bi[i]<-sum(ev[i,(d[i]+1):n[i]])/(p-d[i])
 	}
-	else if (model=="ABQD" | model=="AIBQD"){
+	else if (model=="ABQD" | model=="AJBQD"){
 		if (N>=p) bi<-matrix(sum(ev[(d[1]+1):p])/(p-d[1]),dimnames=list(c("B :"),c('')))
 		else bi<-matrix(sum(ev[(d[1]+1):N])/(p-d[1]),dimnames=list(c("B :"),c('')))
 	}

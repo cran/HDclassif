@@ -7,7 +7,7 @@ High Dimensional Discriminant Analysis
 HDDA is a model-based discriminant analysis method assuming each class of the dataset live in a proper Gaussian subspace which is much smaller than the original one, the hdda.learn function calculates the parameters of each subspace in order to predict  the class of new observation of this kind.
 }
 \usage{
-hdda(data, cls, model = "AkiBkQkDk", graph = FALSE, d = "Cattell", 
+hdda(data, cls, model = "AkjBkQkDk", graph = FALSE, d = "Cattell", 
 threshold = 0.2, show = TRUE, scaling = FALSE)
 }
 
@@ -19,15 +19,15 @@ A matrix or a data frame of observations, assuming the rows are the observations
 The vector of the class of each observations, its type can be numeric or string.
 }
   \item{model}{
-The models used with the HDDA method are the following : "AkiBkQkDk", "AkBkQkDk", "ABkQkDk", "AkiBQkDk", "AkBQkDk", "ABQkDk", "AkiBkQkD", "AkBkQkD", "ABkQkD", "AkiBQkD", "AkBQkD", "ABQkD", "AiBQD", "ABQD", "best" and "dbest".
+The models used with the HDDA method are the following : "AkjBkQkDk", "AkBkQkDk", "ABkQkDk", "AkjBQkDk", "AkBQkDk", "ABQkDk", "AkjBkQkD", "AkBkQkD", "ABkQkD", "AkjBQkD", "AkBQkD", "ABQkD", "AjBQD", "ABQD", "best" and "dbest".
 
-Aki are the parameters of the classes subspaces. If Aki : each class have its parameters and there is one parameter for each dimension ; if Ak : the classes have different parameters but there is only one per class ; if Ai : all the classes have the same parameters for each dimension (it's a particular case with a common orientation matrix) ; if A : all classes have the same one parameter.
+Akj are the parameters of the classes subspaces. If Akj : each class have its parameters and there is one parameter for each dimension ; if Ak : the classes have different parameters but there is only one per class ; if Aj : all the classes have the same parameters for each dimension (it's a particular case with a common orientation matrix) ; if A : all classes have the same one parameter.
 
 Bk are the noises of the classes subspaces. If Bk : each class have its proper noise ; if B : all classes have the same noise.
 
-Qk is the orientation matrix of each class. If Qk : all classes have its proper orientation matrix ; if Q : all classes have orientation.
+Qk is the orientation matrix of each class. If Qk : all classes have its proper orientation matrix ; if Q : all classes have the same orientation matrix.
 
-Dk is the intrinsic dimension of each class. If Dk : the dimensions are free and found by Cattel's Scree-Test ; if D : the dimension is common to all classes and is either found using Cattel's Scree-Test on covariance matrix of the whole dataset, or specified by the user.
+Dk is the intrinsic dimension of each class. If Dk : the dimensions are free and found by Cattel's Scree-Test for each class ; if D : the dimension is common to all classes and is either found using Cattel's Scree-Test on the covariance matrix of the whole dataset, or specified by the user.
 
 The model "best" will compute the six first models (with free dimension, Dk), give their BIC and keep the model with the highest BIC value.
 
@@ -55,7 +55,7 @@ Logical : wether to scale the dataset or not.
 }
 
 \value{
-hdda.learn returns an 'hdc' object ; it's 	a list containing :
+hdda returns an 'hdc' object ; it's a list containing :
 \item{ model }{The name of the model.}
 \item{ k }{The number of classes.}
 \item{ d }{The dimensions of each class.}
@@ -85,10 +85,12 @@ X<-datas$X
 clx<-datas$clx
 Y<-datas$Y
 cly<-datas$cly
-prms1 <- hdda(X,clx,graph=TRUE)         #we get the HDDA parameters
+#we get the HDDA parameters:
+prms1 <- hdda(X,clx,graph=TRUE)         
 
 cl1 <- predict(prms1,Y,cly)
-cl1$class                               #the class vector of Y estimated with HDDA
+#the class vector of Y estimated with HDDA:
+cl1$class                               
 
 #example 2 :
 data(wine)

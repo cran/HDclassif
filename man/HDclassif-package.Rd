@@ -12,8 +12,8 @@ New disciminant analysis and data clustering methods for high dimensional data, 
 \tabular{ll}{
 Package: \tab HDclassif\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2010-02-22\cr
+Version: \tab 1.1\cr
+Date: \tab 2010-10-01\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
@@ -24,7 +24,7 @@ The unsupervised method is implemented in the hddc() function, and once the para
 \author{
 R.Aidan L.Berge C.Bouveyron S.Girard 
 
-Maintainer: L.Berge <laurent.berge at hotmail.fr> R.Aidan <aidan_rudy at hotmail.com> 
+Maintainer: L.Berge <laurent.berge at hotmail.fr> 
 }
 \references{
 C. Bouveyron, S. Girard and C. Schmid, High Dimensional Discriminant Analysis, Communications in Statistics : Theory and Methods, vol. 36 (14), pp. 2607-2623, 2007

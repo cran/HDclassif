@@ -11,8 +11,8 @@ function(nlearn,ntest,p,k=3,prop=NULL,d=NULL,a=NULL,b=NULL){
 
 	#MEANS
 	mu<-matrix(0,k,p)
-	j<-sample(1:p,k)
-	mu[cbind(1:k,j)]<-10*(-1)^ceiling(runif(k,0,10))
+	j<-sample(p,k)
+	mu[cbind(1:k,j)]<-10
 	
 	# Intrinsic dimensions
 	if ( length(d)==0 )	d<-sort(ceiling(runif(k,0,12*(p>20)+5*(p<=20 && p>=6)+(p<6)*(p-1))),decreasing=TRUE)
@@ -23,9 +23,9 @@ function(nlearn,ntest,p,k=3,prop=NULL,d=NULL,a=NULL,b=NULL){
 	for (i in 1:k) Q[[i]]<-qr.Q(qr(mvrnorm(p,mu=rep(0,p),Sigma=diag(1,p))))
 	
 	# Variance in the class-specific subspace
-	if ( length(a)==0 ) a<-sort(ceiling(runif(k,40,300)))
+	if ( length(a)==0 ) a<-sort(ceiling(runif(k,30,350)))
 	else if ( length(a)!=k || !any(is.numeric(a)) ) stop("Wrong value of a.")
-	if ( length(b)==0 )b<-sort(ceiling(runif(k,1,25)))
+	if ( length(b)==0 )b<-sort(ceiling(runif(k,0,25)))
 	else if ( length(b)!=k || !any(is.numeric(b)) ) stop("Wrong value of b.")
 	
 	# Simulation

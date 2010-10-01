@@ -25,13 +25,9 @@ function(DATA,cls,threshold,graph,method){
 	if (method=='C') {
 		x<-abs(diff(ev))
 		Nmax<-max(min(floor(N/k-2),p-2),2)
-		for (j in Nmax:1) {
-			if (x[j]>=threshold*max(x[1:Nmax])) {
-				d<-j
-				break
-			} 
-			else if(j==1) d<-1
-		}
+		if (p==2) d=rep(1,k)
+		else d<-max(which(x[1:Nmax]>=threshold*max(x[1:Nmax])))
+		
 		if (graph) {
 			nbis<-length(ev)-1
 			x<-abs(diff(ev))
@@ -39,7 +35,7 @@ function(DATA,cls,threshold,graph,method){
 			par(mfrow=c(2,1))
 			plot(ev[1:(min(d+10,nbis))],type="h",col="green",main="Ordered Eigen Values of the \nwhole dataset covariance matrix",xlab="",ylab="",lwd=3)
 			plot(x[1:(min(d+10,nbis-1))],type="l",col="blue",main=paste("Cattell's Scree-Test\nd=",d,sep=''),xlab=paste("Threshold=",threshold,sep=''),ylab='')
-			abline(h=threshold*max(x),lty=3)	
+			abline(h=threshold*max(x[1:Nmax]),lty=3)	
 			points(d,x[d],col='red')
 		}
 	}
