@@ -1,16 +1,7 @@
-HDclassif version 1.1 2010-10-01
+HDclassif version 1.1.1 2010-10-01
 
--A plot minor issue is fixed
--Some names are changed in the functions hdda and hddc : 
-	¤ Former name	->	New name
-	¤ AkiBkQkDk		->	AkjBkQkDk
-	¤ AkiBQkDk		->	AkjBQkDk
-	¤ AkiBkQkD		->	AkjBkQkD
-	¤ AkiBQkD		->	AkjBQkD
-	¤ AiBQD			->	AjBQD
--When several models are given, HDDA and HDDC now explicitly give the model they select
--The initialization kmeans can be settled by the user using ... in HDDC
--HDDC now handles several model at once
--A demo has been built for the methods hdda and hddc
+-the models can now be selected using numbers instead of integers
+-the graph of hddc now gives the comparison between different models and different number of clusters
+-the calculation of the log likelihood has been modified in hddc
 
 

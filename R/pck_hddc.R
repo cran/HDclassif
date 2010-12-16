@@ -75,6 +75,8 @@ function(DATA,k,model,threshold,dfixed,graph,algo,itermax,eps,init,mini.nb,ctrl,
 		if (k>1 && (any(is.na(t)) || any(colSums(t>1/k)<=ctrl*N/100))) return(1)
 		m<-pck_hddc_m_step(DATA,k,t,model,threshold,dfixed)
 		t<-pck_hddc_e_step(DATA,m)
+		L<-t$L
+		t<-t$t
 		if (algo=='CEM') {
 			t2<-matrix(0,N,k)
 			t2[cbind(1:N,max.col(t))]<-1
@@ -83,13 +85,7 @@ function(DATA,k,model,threshold,dfixed,graph,algo,itermax,eps,init,mini.nb,ctrl,
 			t2<-matrix(0,N,k)
 			for (i in 1:N)	t2[i,]<-t(rmultinom(1,1,t[i,]))
 		}
-		L<-0
-		m$b[m$b<1e-10]=1e-10
-		for (i in 1:k){
-			som_a<-sum(log(m$a[i,1:m$d[i]]))
-			L<-L+m$prop[i]*(som_a+(p-m$d[i])*log(m$b[i])-2*log(m$prop[i])+p*(1+log(2*pi)))
-		}
-		likely[I]<--1/2*L
+		likely[I]<-L
 		if (I!=1) test<-abs(likely[I]-likely[I-1])
 	}
 

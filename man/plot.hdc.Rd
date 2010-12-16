@@ -1,10 +1,10 @@
 \name{plot.hdc}
 \alias{plot.hdc}
 \title{
-Cattel's scree-test for 'hdc' class objects.
+Cattell's scree-test for 'hdc' class objects.
 }
 \description{
-This function plots Cattel's scree-test of parameters coming from using hdda or hddc functions.
+This function plots Cattell's scree-test of parameters coming from using hdda or hddc functions.
 }
 \usage{
 \method{plot}{hdc}(x, threshold = 0.2, ...)

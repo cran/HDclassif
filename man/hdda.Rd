@@ -19,29 +19,66 @@ A matrix or a data frame of observations, assuming the rows are the observations
 The vector of the class of each observations, its type can be numeric or string.
 }
   \item{model}{
-The models used with the HDDA method are the following : "AkjBkQkDk", "AkBkQkDk", "ABkQkDk", "AkjBQkDk", "AkBQkDk", "ABQkDk", "AkjBkQkD", "AkBkQkD", "ABkQkD", "AkjBQkD", "AkBQkD", "ABQkD", "AjBQD", "ABQD", "best" and "dbest".
+The models used with the HDDA method are the following : \dQuote{AkjBkQkDk}, \dQuote{AkBkQkDk}, \dQuote{ABkQkDk}, \dQuote{AkjBQkDk}, \dQuote{AkBQkDk}, \dQuote{ABQkDk}, \dQuote{AkjBkQkD}, \dQuote{AkBkQkD}, \dQuote{ABkQkD}, \dQuote{AkjBQkD}, \dQuote{AkBQkD}, \dQuote{ABQkD}, \dQuote{AjBQD}, \dQuote{ABQD}, \dQuote{best} and \dQuote{dbest}. Note that the model names are not case sensitive.
 
-Akj are the parameters of the classes subspaces. If Akj : each class have its parameters and there is one parameter for each dimension ; if Ak : the classes have different parameters but there is only one per class ; if Aj : all the classes have the same parameters for each dimension (it's a particular case with a common orientation matrix) ; if A : all classes have the same one parameter.
+\describe{
+	\item{Akj are the parameters of the classes subspaces :}{
+		\itemize{
+		\item{if Akj : each class have its parameters and there is one parameter for each dimension}
+		\item{if Ak : the classes have different parameters but there is only one per class}
+		\item{if Aj : all the classes have the same parameters for each dimension (it's a particular case with a common orientation matrix)}
+		\item{if A : all classes have the same one parameter}
+		}
+	}
 
-Bk are the noises of the classes subspaces. If Bk : each class have its proper noise ; if B : all classes have the same noise.
+	\item{Bk are the noises of the classes subspaces :}{ 
+		\itemize{
+			\item{If Bk : each class have its proper noise}
+			\item{if B : all classes have the same noise}
+		}
+	}
 
-Qk is the orientation matrix of each class. If Qk : all classes have its proper orientation matrix ; if Q : all classes have the same orientation matrix.
+	\item{Qk is the orientation matrix of each class :}{ 
+		\itemize{
+			\item{if Qk : all classes have its proper orientation matrix}
+			\item{if Q : all classes have the same orientation matrix}
+		}
+	}
+	
+	\item{Dk is the intrinsic dimension of each class :}{ 
+		\itemize{
+			\item{if Dk : the dimensions are free and proper to each class}
+			\item{if D : the dimension is common to all classes}
+		}
+	}
+	\item{The model \dQuote{best} :}{It will compute the six first models (with free dimension, Dk), give their BIC and keep the model with the highest BIC value.}
+	\item{The model \dQuote{dbest} :}{It will compute the eigth last models (with common dimension, D), give their BIC and keep the model with the highest BIC value.}
+}
+Instead of writing the model names, they can also be specified using an integer. 1 represents the most general model (\dQuote{AkjBkQkDk}) while 14 is the most constrained (\dQuote{ABQD}), the others  number/name matching are given below : 
+\tabular{lcclc}{
+AkjBkQkDk \tab   1   \tab   \tab  AkjBkQkD \tab   7   \cr 
+AkBkQkDk \tab   2   \tab \tab  AkBkQkD \tab   8   \cr   
+ABkQkDk \tab   3   \tab  \tab ABkQkD \tab   9   \cr   
+AkjBQkDk \tab   4   \tab  \tab  AkjBQkD \tab   10   \cr   
+AkBQkDk \tab   5   \tab  \tab  AkBQkD \tab   11   \cr   
+ABQkDk \tab   6   \tab  \tab  ABQkD \tab   12  \cr
+AjBQD \tab 13 \tab  \tab ABQD \tab 14
+} 
 
-Dk is the intrinsic dimension of each class. If Dk : the dimensions are free and found by Cattel's Scree-Test for each class ; if D : the dimension is common to all classes and is either found using Cattel's Scree-Test on the covariance matrix of the whole dataset, or specified by the user.
-
-The model "best" will compute the six first models (with free dimension, Dk), give their BIC and keep the model with the highest BIC value.
-
-The model 'dbest' will compute the eigth last models (with common dimension, D), give their BIC and keep the model with the highest BIC value.
 }
   \item{graph}{
-Logical, TRUE or FALSE. If TRUE, it will display the graph with the eigen values and the Cattel's Scree-Test for each class. Cattel's Scree-Test is to find the dimension of each class subspace. It may display the BIC dimension choice if it has been chosen for dimension selection (d="Bic").
+Logical : if TRUE, it will display the graph with the eigen values and the Cattel's Scree-Test for each class. Cattel's Scree-Test is to find the dimension of each class subspace. It may display the BIC dimension choice if it has been chosen for dimension selection (d="Bic").
 }
   \item{d}{
- This parameter have several functions.
-It specifies if the intrinsic dimensions of the classes are found with Cattell's scree-test or using the BIC criterion (i.e. the dimension is here found maximising the BIC criterion : the dimension kept is the one before the first fall of the BIC w.r.t. the dimension). Use d="C" for Cattell's scree-test and d="B" for using the BIC criterion.
-It gives the dimension used with the models with common dimensions :"AkiBkQkD" to "ABQD", if used in this order, it must be an integer stricly inferior to the number of variables. 
-Note that if a d is not specified for a common dimension model, the dimension will be gathered via the common covariance matrix, using Cattell's scree-test or the BIC criterion, wether d is equal to "Cattell" or "Bic", can be abreviated to "C" or "B".
-
+\describe{
+	\item{This parameter have several functions :}{
+		\itemize{
+			\item{it specifies if the intrinsic dimensions of the classes are found with Cattell's scree-test or using the BIC criterion (i.e. the dimension is here found maximising the BIC criterion : the dimension kept is the one before the first fall of the BIC w.r.t. the dimension).}
+			\item{it gives the dimension used with the models with common dimensions : \dQuote{AkjBkQkD} to \dQuote{ABQD}, if used in this case, it must be an integer stricly inferior to the number of variables.}
+			\item{note that if a d is not specified for a common dimension model, the dimension will be gathered via the common covariance matrix, using Cattell's scree-test or the BIC criterion, wether d is equal to "Cattell" or "Bic" (which can be abreviated to "C" or "B" -also it is not case sensitive-).}
+		}
+	}
+}
 }
   \item{threshold}{
 A float stricly within 0 and 1. It is the threshold used in the Cattel's Scree-Test.
@@ -90,7 +127,12 @@ prms1 <- hdda(X,clx,graph=TRUE)
 
 cl1 <- predict(prms1,Y,cly)
 #the class vector of Y estimated with HDDA:
-cl1$class                               
+cl1$class                     
+
+#another model is used :
+prms1 <- hdda(X,clx,graph=TRUE,model=12)
+#model=12 is equivalent to model="ABQkD"     
+cl1 <- predict(prms1,Y,cly) 
 
 #example 2 :
 data(wine)
@@ -98,8 +140,6 @@ a <- wine[,-1]
 z <- wine[,1]
 prms2 <- hdda(a,z,model='best',scaling=TRUE,d="B")
 cl2 <- predict(prms2,a,z)
-
-
 
 }
 \keyword{ hdda }

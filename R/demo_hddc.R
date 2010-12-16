@@ -1,6 +1,5 @@
 demo_hddc <-
 function(){
-	x11()
 	data(Crabs)
 	devAskNewPage(ask = FALSE)
 	X<-Crabs[,-1]

@@ -26,12 +26,14 @@ function(x,par){
 			proj<-(X%*%Q[[i]])%*%t(Q[[i]])
 			A<-(-proj)%*%Q[[i]]%*%sqrt(diag(1/a[i,1:d[i]],d[i]))
 			B<-X-proj
-			K[i,]<-rowSums(A^2)+1/b[i]*rowSums(B^2)+s+(p-d[i])*log(b[i])-2*log(prop[i])
+			K[i,]<-rowSums(A^2)+1/b[i]*rowSums(B^2)+s+(p-d[i])*log(b[i])-2*log(prop[i])+p*log(2*pi)
 		}
 	}
+	A<--1/2*t(K)
+	L<-sum(log(rowSums(exp(A-apply(A,1,max))))+apply(A,1,max))/N
 	
 	t<-matrix(0,N,k)
-	for (i in 1:k) t[,i]=1/rowSums(exp((K[i,]-t(K))/2))
-	t
+	for (i in 1:k) t[,i]<-1/rowSums(exp((K[i,]-t(K))/2))
+	list(t=t,L=L)
 }
 

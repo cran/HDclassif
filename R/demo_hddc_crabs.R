@@ -46,6 +46,8 @@ function(data,k=4,model='AKBKQKD',threshold=0.2,d=1,algo='EM',itermax=80,eps=1e-
 		}
 		m<-pck_hddc_m_step(DATA,k,t,model,threshold,d)
 		t<-pck_hddc_e_step(DATA,m)
+		L<-t$L
+		t<-t$t
 		if (algo=='CEM') {
 			t2<-matrix(0,N,k)
 			t2[cbind(1:N,max.col(t))]<-1
@@ -54,19 +56,13 @@ function(data,k=4,model='AKBKQKD',threshold=0.2,d=1,algo='EM',itermax=80,eps=1e-
 			t2<-matrix(0,N,k)
 			for (i in 1:N)	t2[i,]<-t(rmultinom(1,1,t[i,]))
 		}
-		L<-0
-		m$b[m$b<1e-10]=1e-10
-		for (i in 1:k){
-			som_a<-sum(log(m$a[i,1:m$d[i]]))
-			L<-L+m$prop[i]*(som_a+(p-m$d[i])*log(m$b[i])-2*log(m$prop[i])+p*(1+log(2*pi)))
-		}
 		
 		classes<-c()
 		for (i in 1:N) classes[i]=which.max(t[i,])
-		for (waiting in 1:250000){}
+		for (oizrhg in 1:150000){}
 		demo_hddc_acp(DATA,classes,m,xlab=paste('Iteration',I),ylab='',main="Clustering process",...)
 		
-		likely[I]<--1/2*L
+		likely[I]<-L
 		if (I!=1) test<-abs(likely[I]-likely[I-1])
 	}
 

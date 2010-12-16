@@ -56,7 +56,7 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 			nbis<-ncol(ev)-1
 			x<-abs(t(diff(t(ev[,1:min(d[i]+21,nbis)]))))
 			x11()
-			par(mfrow=c(k*(k<=4)+4*(k>4)-(any(k==c(5,6,10))),2*(1*(k%%4!=0)+floor(k/4))))
+			par(mfrow=c(k*(k<=3)+2*(k==4)+3*(k>4 && k<=9)+4*(k>9),2*(1+floor(k/4)-1*(k==12))))
 			for (i in 1:k){	
 				sub1<-paste("Class #",i,", d",i,"=",d[i],sep="")
 				plot(ev[i,1:(min(d[i]+10,nbis))],type="h",col="green",main=paste("Ordered Eigen Values\nClass #",i,sep=""),xlab="",ylab="",lwd=3)
@@ -119,7 +119,7 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 		d<-rep(0,k)
 		if (graph){
 			x11()
-			par(mfrow=c(k*(k<=4)+4*(k>4)-(any(k==c(5,6,10))),1*(k%%4!=0)+floor(k/4)))
+			par(mfrow=c(k*(k<=3)+2*(k==4)+3*(k>4 && k<=9)+4*(k>9),1*(1+floor(k/4)-1*(k==12))))
 		}
 		ev[ev<1e-10]=1e-10
 		for (i in 1:k) {
@@ -156,7 +156,7 @@ function(data,cls,model,threshold,graph,dfixed,kname){
 
 		if (graph==TRUE) {
 			x11()
-			par(mfrow=c(k*(k<=4)+4*(k>4)-(any(k==c(5,6,10))),2*(1*(k%%4!=0)+floor(k/4))))
+			par(mfrow=c(k*(k<=3)+2*(k==4)+3*(k>4 && k<=9)+4*(k>9),2*(1+floor(k/4)-1*(k==12))))
 			for (i in 1:k){
 				sub1<-paste("Class #",i,", d",i,"=",d[i],sep="")
 				plot(ev[i,1:(min(d[i]+10,nbis))],type="h",col="green",main=paste("Ordered Eigen Values\nClass #",i,sep=""),xlab="",ylab="",lwd=3)

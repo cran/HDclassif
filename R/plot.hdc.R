@@ -2,7 +2,8 @@ plot.hdc <-
 function(x,threshold=0.2,...){
 	ev<-x$ev
 	k<-x$k
-	p<-ncol(ev)
+	if (is.matrix(ev)) p<-ncol(ev)
+	else p<-length(ev)
 	if (is.matrix(ev)==FALSE) ev<-matrix(ev,k,length(ev),byrow=TRUE)
 	dvp<-abs(t(diff(t(ev))))
 	nbis<-ncol(dvp)
@@ -16,7 +17,7 @@ function(x,threshold=0.2,...){
 			d[i]<-max(which(dvp[i,1:Nmax[i]]>=maxi[i]))
 		}
 	}
-	par(mfrow=c(k*(k<=4)+4*(k>4)-(any(k==c(5,6,10))),2*(1*(k%%4!=0)+floor(k/4))))
+	par(mfrow=c(k*(k<=3)+2*(k==4)+3*(k>4 && k<=9)+4*(k>9),2*(1+floor(k/4)-1*(k==12))))
 	for (i in 1:k){
 		sub1<-paste("Class #",i,", d",i,"=",d[i],sep="")
 		plot(ev[i,1:(min(d[i]+10,nbis))],type="h",col="green",main=paste("Ordered Eigen Values\nClass #",i,sep=""),xlab="",ylab="",lwd=3)
