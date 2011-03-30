@@ -5,23 +5,27 @@ function(data,k=1:10,model='AkjBkQkDk',threshold=0.2,itermax=60,eps=1e-2,graph=F
 	Alg<-c('EM','CEM','SEM')
 	Init<-c('random','kmeans','mini-em','param')
 	algo=toupper(algo)
+	if(length(init)>1){
+		init=unclass(init)
+		if(any(k!=max(init)))stop("Error: The number of class of k and of the initialization vector are different\n")
+	}
 	if (is.numeric(model)) model=na.omit(Mod[model])
 	else model=toupper(model)
 	for (i in 1:length(model)) {
-		if (!any(Mod==model[i])) stop("Error : invalid model name\n")
+		if (!any(Mod==model[i])) stop("Error: invalid model name\n")
 		if (any(model[i]==Mod[7:14]) && !is.null(d) && d>ncol(data)) stop("Error: d must be strictly inferior to the dimension, \nwhich is in this case ",ncol(data)-1,'\n')
 	}
-	if (!is.numeric(ctrl) || ctrl<0) cat("Error : the control variable must be a strictly positive double\n")
-	else if (!any(init==Init)) cat("Error : invalid initialisation name\n")
-	else if (is.numeric(threshold)==0 || threshold<=0 || threshold>=1) cat("Error : the parameter 'threshold' must be a double strictly within ]0,1[\n")
-	else if (!any(Alg==algo)) cat("Error : invalid algorithm name\n")
-	else if (init=='param' & nrow(data)<ncol(data)) cat("The 'param' initialisation can't be done when N<p\n")
+	if (!is.numeric(ctrl) || ctrl<0) cat("Error: the control variable must be a strictly positive double\n")
+	else if (length(init)==1 && !any(init==Init)) cat("Error: invalid initialization name\n")
+	else if (is.numeric(threshold)==0 || threshold<=0 || threshold>=1) cat("Error: the parameter 'threshold' must be a double strictly within ]0,1[\n")
+	else if (!any(Alg==algo)) cat("Error: invalid algorithm name\n")
+	else if (length(init)==1 && init=='param' && nrow(data)<ncol(data)) cat("The 'param' initialisation can't be done when N<p\n")
 	else if (any(is.na(data))) cat("Error : NA values are not supported\n")
-	else if (init=='param' && library(MASS,logical.return=TRUE)==FALSE) cat("You need the library MASS to use the 'param' initialisation\n") 
-	else if (init=='mini-em' && (length(mini.nb)!=2 | is.numeric(mini.nb)!=1)) cat("Error : the parameter mini.nb must be a vector of length 2 with integers\n")
-	else if (typeof(init)!="character" && length(init)!=nrow(data)) cat("Error : length of the class must fit the data\n")
-	else if (length(k)>20) cat("Error : more than 20 different classes can't be tested\n")
-	else if (!is.numeric(k) || min(k)<1) cat("Error : k must be a vector of positive integers\n")
+	else if (length(init)==1 && init=='param' && library(MASS,logical.return=TRUE)==FALSE) cat("You need the library MASS to use the 'param' initialisation\n") 
+	else if (length(init)==1 && init=='mini-em' && (length(mini.nb)!=2 | is.numeric(mini.nb)!=1)) cat("Error: the parameter mini.nb must be a vector of length 2 with integers\n")
+	else if (typeof(init)!="character" && length(init)!=nrow(data)) cat("Error: the length of the class must fit the data\n")
+	else if (length(k)>20) cat("Error: more than 20 different classes can't be tested\n")
+	else if (!is.numeric(k) || min(k)<1) cat("Error: k must be a vector of positive integers\n")
 	else if (is.numeric(k)) {
 		data<-as.matrix(data)
 		if (scaling) {
