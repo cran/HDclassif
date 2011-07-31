@@ -4,12 +4,14 @@
 #maximize the BIC criterion are selected.
 
 data(Crabs)
-X<-Crabs[,-1]
-clx<-Crabs[,1]
-prms<-hddc(X,k=1:6,model=c("AkjBkQkDk","ABkQkD"))
-prms
-res<-predict(prms,X,clx)
-prms<-hddc(X,k=2:6,model=c(4:5,10),cgraph=TRUE)
+A <- Crabs[,-1]
+cls <- Crabs[,1]
+prms <- hddc(A,4)
+res <- predict(prms,A,cls)
+
+#selection of the number of clusters
+prms <- hddc(A,graph=TRUE)
+res<-predict(prms,A,cls)
 
 #Now a PCA on the "Crabs" dataset is done on the two first 
 #principal axis.

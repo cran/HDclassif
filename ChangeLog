@@ -1,6 +1,23 @@
+HDclassif version 1.2 2011-07-15:
+
+- now the BIC an the log likelihood are not divided by N (the number of observation) anymore
+- help files have been rewritten
+- very slight changes in the random initialization of hddc (now the random init cannot begin with an empty class)
+- changes on the predict.hdc function. It now works all the time.
+- added some features to hdda, notably the model "all" and the V-fold cross validation for dimension selection
+- a cross-validation option has been added for \var{hdda} in order to select the best dimension or threshold with respect to the CV result
+- big changes in the function plot.hdc. Now the dimensions selection using either Cattell's scree-test or the BIC can be plotted.
+- the graph of the eigenvalues has been removed
+- graph scale changed for Cattell's scree-test to see directly the threshold levels
+- adding the possibility to choose the dimension with the "bic" criterion in \var{hddc}
+- added some warnings when the value of the parameter b is very low (inferior to 10e-6)
+- the calclulation trick when N<p is now done since Ni<p, Ni being the number of observations for the class i
+- added a leave-one-out cross-validation option to hdda
+
+
 HDclassif version 1.1.3 2011-03-30:
 
--hddc can be initialized with a given class vector 
+- fixed a bug: hddc can now be initialized with a given class vector 
 
 
 HDclassif version 1.1.2 2011-02-10:
@@ -12,7 +29,7 @@ HDclassif version 1.1.2 2011-02-10:
 
 HDclassif version 1.1.1 2010-12-01:
 
--the models can now be selected using numbers instead of integers
+-the models can now be selected using integers instead of names
 -the graph of hddc now gives the comparison between different models and different number of clusters
 -the calculation of the log likelihood has been modified in hddc
 

@@ -23,9 +23,9 @@ The Crabs data frame has 200 rows and 6 columns, describing 5 morphological meas
 This dataset can also be found in the MASS package, the unique difference is the class vector which is easier to use here.
 }
 \source{
-Campbell, N. A. and Mahon, R. J. (1974) A multivariate study of variation on two species of rock crab of genus Leptograspus. Australian Journal of Zoology 22, 417-425.
+Campbell, N. A. and Mahon, R. J. (1974) A multivariate study of variation on two species of rock crab of genus Leptograspus. Australian Journal of Zoology \bold{22}, 417-425.
 }
 \references{
-Venables, W. N. and Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth edition .Springer.
+Venables, W. N. and Ripley, B. D. (2002) Modern Applied Statistics with S. Fourth edition. Springer.
 }
 \keyword{datasets}

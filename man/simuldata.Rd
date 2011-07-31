@@ -4,10 +4,10 @@
 Gaussian Data Generation
 }
 \description{
-This function generates two datasets according to the model [AkBkQkDk] of the HDDA gaussian mixture model paramatrisation (see ref).
+This function generates two datasets according to the model [AkBkQkDk] of the HDDA gaussian mixture model paramatrisation (see ref.).
 }
 \usage{
-simuldata(nlearn, ntest, p, k = 3, prop = NULL, d = NULL, a = NULL, b = NULL)
+simuldata(nlearn, ntest, p, K = 3, prop = NULL, d = NULL, a = NULL, b = NULL)
 }
 \arguments{
   \item{nlearn}{
@@ -19,7 +19,7 @@ The size of the testing dataset to be generated.
   \item{p}{
 The number of variables.
 }
-  \item{k}{
+  \item{K}{
 The number of classes.
 }
   \item{prop}{
@@ -43,22 +43,22 @@ The noise of each class.
 \item{ prms }{ The principal parameters used to generate the datasets. }
 }
 \references{
- C. Bouveyron, S. Girard and C. Schmid, High Dimensional Discriminant Analysis, Communications in Statistics : Theory and Methods, vol. 36 (14), pp. 2607-2623, 2007
+ C. Bouveyron, S. Girard and C. Schmid, \dQuote{High Dimensional Discriminant Analysis, Communications in Statistics : Theory and Methods}, vol. \bold{36} (14), pp. 2607-2623, 2007
 }
 \author{
-R. Aidan, L. Berge, C. Bouveyron, S. Girard  
+L. Berge, C. Bouveyron, S. Girard  
 }
 \seealso{
 \code{\link{hddc}}, \code{\link{hdda}}.
 }
 \examples{
-datas<-simuldata(500,1000,50,k=5,prop=c(0.2,0.25,0.25,0.15,0.15))
-X<-datas$X
-clx<-datas$clx
-f<-hdda(X,clx)
-Y<-datas$Y
-cly<-datas$cly
-e<-predict(f,Y,cly)
+data <- simuldata(500, 1000, 50, K=5, prop=c(0.2,0.25,0.25,0.15,0.15))
+X <- data$X
+clx <- data$clx
+f <- hdda(X, clx)
+Y <- data$Y
+cly <- data$cly
+e <- predict(f, Y, cly)
 
 }
 \keyword{ generation }

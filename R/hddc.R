@@ -1,84 +1,97 @@
-hddc <-
-function(data,k=1:10,model='AkjBkQkDk',threshold=0.2,itermax=60,eps=1e-2,graph=FALSE,algo='EM',d=NULL,init='kmeans',show=TRUE,mini.nb=c(5,10),scaling=FALSE,ctrl=1,cgraph=FALSE,...){
-	Mod<-c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD")
-	Mod2<-c("AKJBKQKDK","AKBKQKDK ","ABKQKDK  ","AKJBQKDK ","AKBQKDK  ","ABQKDK   ","AKJBKQKD ","AKBKQKD  ","ABKQKD   ","AKJBQKD  ","AKBQKD   ","ABQKD    ","AJBQD    ","ABQD     ")
-	Alg<-c('EM','CEM','SEM')
-	Init<-c('random','kmeans','mini-em','param')
+hddc  <- 
+function(data,K=1:10,model=c("AkjBkQkDk"),threshold=0.2,com_dim=NULL,itermax=60,eps=1e-3,graph=FALSE,algo='EM',d="Cattell",init='kmeans',show=TRUE,mini.nb=c(5,10),scaling=FALSE,ctrl=1,dim.ctrl=1e-8,...){
+	Mod <- c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD")
+	Mod2 <- c("AKJBKQKDK","AKBKQKDK ","ABKQKDK  ","AKJBQKDK ","AKBQKDK  ","ABQKDK   ","AKJBKQKD ","AKBKQKD  ","ABKQKD   ","AKJBQKD  ","AKBQKD   ","ABQKD    ","AJBQD    ","ABQD     ")
+	Alg <- c('EM','CEM','SEM')
+	Init <- c('random','kmeans','mini-em','param')
 	algo=toupper(algo)
 	if(length(init)>1){
-		init=unclass(init)
-		if(any(k!=max(init)))stop("Error: The number of class of k and of the initialization vector are different\n")
+		init <- unclass(init)
+		if(any(K!=max(init))) stop("The number of class of K and of the initialization vector are different\n",call.=FALSE)
+		if(length(init)!=nrow(data)) stop("The size of the initialization vector is different of the size of the data\n",call.=FALSE)
 	}
-	if (is.numeric(model)) model=na.omit(Mod[model])
-	else model=toupper(model)
-	for (i in 1:length(model)) {
-		if (!any(Mod==model[i])) stop("Error: invalid model name\n")
-		if (any(model[i]==Mod[7:14]) && !is.null(d) && d>ncol(data)) stop("Error: d must be strictly inferior to the dimension, \nwhich is in this case ",ncol(data)-1,'\n')
+	
+	if(!is.numeric(d)) d <- toupper(d)
+	if (d%in%c("CATTELL","C")) d <- "C"
+	else if (d%in%c("BIC","B")) d <- "B"
+	save_d <- d
+	
+	if(length(model)==1 && model=="ALL") model <- 1:14
+	if (is.numeric(model)) model <- na.omit(Mod[model])
+	else model <- toupper(model)
+	num <- which(model%in%as.character(1:14))
+	model[num] <- Mod[as.numeric(model[num])]
+	mod_num <- c()
+	for(i in 1:length(model)) mod_num[i] <- which(model[i]==Mod)
+	mod_num <- sort(unique(mod_num))
+	model <- Mod[mod_num]
+	
+	if(is.integer(d)) stop("d must be equal to \"BIC\" or \"Cattell\"",call.=FALSE)
+	if (any(!model%in%Mod)) stop("Invalid model name\n",call.=FALSE)
+	if (any(model%in%Mod[7:14]) && is.numeric(d) && d>ncol(data)) stop("d must be strictly inferior to the dimension, \nwhich is in this case ",ncol(data),'\n',call.=FALSE)
+	if (!is.numeric(ctrl) || ctrl<0) stop("The control variable must be a strictly positive double\n",call.=FALSE)
+	if (length(init)==1 && !any(init==Init)) stop("Invalid initialization name\n",call.=FALSE)
+	if (is.numeric(threshold)==0 || threshold<=0 || threshold>=1) stop("The parameter 'threshold' must be a double strictly within ]0,1[\n",call.=FALSE)
+	if (!any(Alg==algo)) stop("Invalid algorithm name\n",call.=FALSE)
+	if (length(init)==1 && init=='param' && nrow(data)<ncol(data)) stop("The 'param' initialization can't be done when N<p\n",call.=FALSE)
+	if (any(is.na(data))) stop("NA values are not supported\n",call.=FALSE)
+	if (length(init)==1 && init=='param' && library(MASS,logical.return=TRUE)==FALSE) stop("You need the library MASS to use the 'param' initialization\n",call.=FALSE) 
+	if (length(init)==1 && init=='mini-em' && (length(mini.nb)!=2 | is.numeric(mini.nb)!=1)) stop("The parameter mini.nb must be a vector of length 2 with integers\n",call.=FALSE)
+	if (!is.numeric(K) || min(K)<1) stop("K must be a vector of positive integers\n",call.=FALSE)
+
+	data <- as.matrix(data)
+	if (scaling) {
+		data <- scale(data)
+		scaling <- list(mu=attr(data,"scaled:center"),sd=attr(data,"scaled:scale"))
 	}
-	if (!is.numeric(ctrl) || ctrl<0) cat("Error: the control variable must be a strictly positive double\n")
-	else if (length(init)==1 && !any(init==Init)) cat("Error: invalid initialization name\n")
-	else if (is.numeric(threshold)==0 || threshold<=0 || threshold>=1) cat("Error: the parameter 'threshold' must be a double strictly within ]0,1[\n")
-	else if (!any(Alg==algo)) cat("Error: invalid algorithm name\n")
-	else if (length(init)==1 && init=='param' && nrow(data)<ncol(data)) cat("The 'param' initialisation can't be done when N<p\n")
-	else if (any(is.na(data))) cat("Error : NA values are not supported\n")
-	else if (length(init)==1 && init=='param' && library(MASS,logical.return=TRUE)==FALSE) cat("You need the library MASS to use the 'param' initialisation\n") 
-	else if (length(init)==1 && init=='mini-em' && (length(mini.nb)!=2 | is.numeric(mini.nb)!=1)) cat("Error: the parameter mini.nb must be a vector of length 2 with integers\n")
-	else if (typeof(init)!="character" && length(init)!=nrow(data)) cat("Error: the length of the class must fit the data\n")
-	else if (length(k)>20) cat("Error: more than 20 different classes can't be tested\n")
-	else if (!is.numeric(k) || min(k)<1) cat("Error: k must be a vector of positive integers\n")
-	else if (is.numeric(k)) {
-		data<-as.matrix(data)
-		if (scaling) {
-			data<-scale(data)
-			scaling<-list(mu=attr(data,"scaled:center"),sd=attr(data,"scaled:scale"))
+	else scaling <- NULL
+	BIC <- c()
+	p <- ncol(data)
+	e <- vector(mode="list",length=length(K))
+	if (show) cat('\t  Model  \t   K\t   BIC\n')
+	nm <- length(model)
+	ind <- 1
+	for (i in (K <- floor(sort(K)))){
+		if (i==1){
+			e[[1]] <- pck_hddc(data,1,"AKJBKQKDK",threshold,d,algo,itermax,eps,init,mini.nb,ctrl,dim.ctrl,...)
+			BIC[1:nm] <- pck_hdda_bic(e[[1]],p)
+			if (show) cat('\t',"ALL      ",'\t',1,'\t',BIC[1],'\n')
+			ind <- nm+1
 		}
-		else scaling<-NULL
-		BIC<-c()
-		e<-vector(mode="list",length=length(k))
-		if (show) cat('\t  Model  \t k\t   BIC\n')
-		nm<-length(model)
-		ind<-1
-		for (i in (k<-floor(sort(k)))){
-			if (i==1){
-				e[[1]]<-pck_hddc(data,1,"AKJBKQKDK",threshold,d,graph,algo,itermax,eps,init,mini.nb,ctrl,...)
-				BIC[1:nm]<-pck_hdda_bic(data,"AKJBKQKDK",e[[1]],0)
-				if (show) cat('\t',"ALL      ",'\t',1,'\t',BIC[1],'\n')
-				ind<-nm+1
-			}
-			else {
-				for (M in model){
-					e[[ind]]<-pck_hddc(data,i,M,threshold,d,graph,algo,itermax,eps,init,mini.nb,ctrl,...)
-					if (length(e[[ind]])==1){
-						if (show) cat('\t',Mod2[which(Mod==M)],'\t',i,'\t',"STOPPED\n")
-						BIC[ind]<--Inf
-					}
-					else {
-						BIC[ind]<-pck_hdda_bic(data,M,e[[ind]],0)
-						if (show) cat('\t',Mod2[which(Mod==M)],'\t',i,'\t',BIC[ind],'\n')
-					}
-					ind<-ind+1
+		else {
+			for (M in model){
+				e[[ind]] <- pck_hddc(data,i,M,threshold,d,algo,itermax,eps,init,mini.nb,ctrl,dim.ctrl,com_dim,...)
+				if (length(e[[ind]])==1){
+					if (show) cat('\t',Mod2[which(Mod==M)],'\t',i,'\t',"STOPPED\n")
+					BIC[ind] <- -Inf
 				}
+				else {
+					if(M%in%Mod[13:14]) BIC[ind] <- pck_hdda_bic(e[[ind]],p,data)
+					else BIC[ind] <- pck_hdda_bic(e[[ind]],p)
+					if (show) cat('\t',Mod2[which(Mod==M)],'\t',i,'\t',BIC[ind],'\n')
+				}
+				ind <- ind+1
 			}
 		}
-		
-		if (max(BIC)==-Inf) return(NULL)
-		if(cgraph){
-			x11()
-			g<-matrix(BIC,nm,length(k))
-			g[g==-Inf]=NA
-			if (length(k)==1) plot(as.factor(model),g,ylab="BIC",main=paste("k =",k),xlab="model")
-			else{
-				plot(k,g[1,],type='o',ylim=c(min(g,na.rm=TRUE),max(BIC)),pch=1,ylab="BIC")
-				if (nm>1) for (i in 2:nm) lines(k,g[i,],col=i,pch=i,type='o',lty=i)
-				legend(min(k,na.rm=TRUE),max(BIC),model,col=1:nm,pch=1:nm,bty="n",lwd=1,cex=0.85,lty=1:nm)
-			}
-		}
-		prms<-e[[which.max(BIC)]]
-		if (show & (length(model)>1 | length(k)>1)) cat("\nSELECTED : model ",prms$model," with ",prms$k," clusters.\n",sep="")
-		prms$BIC<-max(BIC)
-		prms$scaling<-scaling
-		class(prms)<-'hdc'
-		prms
 	}
+	
+	if (max(BIC)==-Inf) return(NULL)
+	if(graph){
+		g <- matrix(BIC,nm,length(K))
+		g[g==-Inf] <- NA
+		if (length(K)==1) plot(as.factor(model),g,ylab="BIC",main=paste("K =",K),xlab="model")
+		else{
+			plot(K,g[1,],type='o',ylim=c(min(g,na.rm=TRUE),max(BIC)),pch=1,ylab="BIC")
+			if (nm>1) for (i in 2:nm) lines(K,g[i,],col=i,pch=i,type='o',lty=i)
+			legend(min(K,na.rm=TRUE),max(BIC),model,col=1:nm,pch=1:nm,bty="n",lwd=1,cex=0.85,lty=1:nm)
+		}
+	}
+	prms <- e[[which.max(BIC)]]
+	if (show & (length(model)>1 | length(K)>1)) cat("\nSELECTED: model ",prms$model," with ",prms$K," clusters, BIC=",max(BIC),".\n",sep="")
+	prms$BIC <- max(BIC)
+	prms$scaling <- scaling
+	prms$threshold <- if(save_d=="C") threshold else NULL
+	class(prms) <- 'hdc'
+	return(prms)
 }
 
