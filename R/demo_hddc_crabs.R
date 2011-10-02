@@ -59,7 +59,7 @@ function(data,k=4,model='AKBKQKD',threshold=0.2,d=1,algo='EM',itermax=80,eps=1e-
 		
 		classes<-c()
 		for (i in 1:N) classes[i]=which.max(t[i,])
-		for (oizrhg in 1:150000){}
+		Sys.sleep(0.08)
 		demo_hddc_acp(DATA,classes,m,xlab=paste('Iteration',I),ylab='',main="Clustering process",...)
 		
 		likely[I]<-L

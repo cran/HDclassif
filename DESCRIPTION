@@ -1,9 +1,9 @@
 Package: HDclassif
 Type: Package
-Title: High Dimensionnal Classification.
-Version: 1.1.1
+Title: High Dimensionnal Supervised Classification and Clustering
+Version: 1.1.2
 Depends: graphics, stats, MASS
-Date: 2010-12-16
+Date: 2011-10-02
 Author: L.Berge C.Bouveyron S.Girard
 Maintainer: L.Berge <laurent.berge@hotmail.fr>
 Description: New disciminant analysis and data clustering methods for
@@ -14,7 +14,7 @@ Description: New disciminant analysis and data clustering methods for
         and constraints on the model.
 License: GPL-2
 LazyLoad: yes
-ZipData: yes
-Packaged: 2010-12-20 13:09:31 UTC; Laurent
+ZipData: no
+Packaged: 2011-02-08 09:19:47 UTC; Laurent
 Repository: CRAN
-Date/Publication: 2010-12-20 14:50:45
+Date/Publication: 2011-02-10 08:22:12
