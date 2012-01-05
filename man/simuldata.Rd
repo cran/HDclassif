@@ -43,10 +43,10 @@ The noise of each class.
 \item{ prms }{ The principal parameters used to generate the datasets. }
 }
 \references{
- C. Bouveyron, S. Girard and C. Schmid, \dQuote{High Dimensional Discriminant Analysis, Communications in Statistics : Theory and Methods}, vol. \bold{36} (14), pp. 2607-2623, 2007
+Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discriminant Analysis}, \emph{Communications in Statistics : Theory and Methods}, vol. \bold{36}(14), pp. 2607--2623
 }
 \author{
-L. Berge, C. Bouveyron, S. Girard  
+Berge, L. Bouveyron, C. and Girard, S.  
 }
 \seealso{
 \code{\link{hddc}}, \code{\link{hdda}}.

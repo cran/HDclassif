@@ -7,9 +7,10 @@ High Dimensional Discriminant Analysis
 HDDA is a model-based discriminant analysis method assuming each class of the dataset live in a proper Gaussian subspace which is much smaller than the original one, the hdda.learn function calculates the parameters of each subspace in order to predict  the class of new observation of this kind.
 }
 \usage{
-hdda(data, cls, model='AkjBkQkDk', graph=FALSE, d="Cattell", threshold=0.2, com_dim=NULL, 
-     show=TRUE, scaling=FALSE, cv.dim=1:10, cv.threshold=c(.001,.005,.05,1:9*0.1), 
-	 cv.vfold=10, LOO=FALSE, dim.ctrl=1e-8)
+hdda(data, cls, model='AkjBkQkDk', graph=FALSE, d="Cattell", 
+	threshold=0.2, com_dim=NULL, show=TRUE, scaling=FALSE, 
+	cv.dim=1:10, cv.threshold=c(.001,.005,.05,1:9*0.1), 
+	cv.vfold=10, LOO=FALSE, dim.ctrl=1e-8)
 }
 
 \arguments{
@@ -32,7 +33,7 @@ The models used with the HDDA method are the following: \dQuote{AkjBkQkDk}, \dQu
 		}
 	}
 
-	\item{Bk are the noises of the classes subspaces:}{ 
+	\item{Bk are the noises of the classes subspaces:}{
 		\itemize{
 			\item{If Bk: each class has its proper noise}
 			\item{if B:  all classes have the same noise}
@@ -70,8 +71,7 @@ Note also that several models can be run at once, by using a vector of models (e
   \item{graph}{  It is for comparison sake only, when several estimations are run at the same time (either when using several models, or when using cross-validation to select the best dimension/threshold). If graph = TRUE, the plot of the results of all estimations is displayed. Default is FALSE.
 }
   \item{d}{
-\describe{
-	\item{This parameter has several functions:}{
+  This parameter has several functions:
 		\itemize{
 			\item{\dQuote{Cattell}:}{
 				The Cattell's scree-test is used to gather the intrinsic dimension of each class. If the model is of common dimension (models 7 to 14), the scree-test is done on the covariance matrix of the whole dataset.
@@ -87,8 +87,6 @@ Note also that several models can be run at once, by using a vector of models (e
 			}
 			\item{Note that "Cattell" (resp. "BIC") can be abreviated to "C" (resp. "B") and that this argument is not case sensitive.}
 		}
-	}
-}
 }
   \item{threshold}{
   A float stricly within 0 and 1. It is the threshold used in the Cattell's Scree-Test.
@@ -135,12 +133,14 @@ hdda returns an 'hdc' object; it's a list containing:
 \item{ scaling }{The centers and the standard deviation of the original dataset.}
 }
 \references{
-Bouveyron C, Girard S and Schmid C, dQuote{High Dimensional Discriminant Analysis, Communications in Statistics: Theory and Methods}, vol. \bold{36} (14), pp. 2607-2623, 2007
+Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discriminant Analysis}, \emph{Communications in Statistics: Theory and Methods}, vol. \bold{36} (14), pp. 2607--2623
 
-Bouveyron C, Celeux G, Girard S (2010). dQuote{Intrinsic dimension estimation by maximum likelihood in probabilistic PCA.} Technical Report 440372, Universite Paris 1 Pantheon-Sorbonne.
+Bouveyron, C. Celeux, G. and Girard, S. (2010) dQuote{Intrinsic dimension estimation by maximum likelihood in probabilistic PCA}, Technical Report 440372, Universite Paris 1 Pantheon-Sorbonne
+
+Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 \author{
-L. Berge, C. Bouveyron, S. Girard  
+Berge, L. Bouveyron, C. and Girard, S.  
 }
 \seealso{
 \code{\link{hddc}}, \code{\link{predict.hdc}}.

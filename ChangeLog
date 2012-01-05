@@ -1,3 +1,7 @@
+HDclassif version 1.2 2012-01-05:
+- the citation of the package is updated
+- new reference in .Rd files
+
 HDclassif version 1.2 2011-07-15:
 
 - now the BIC an the log likelihood are not divided by N (the number of observation) anymore

@@ -7,9 +7,10 @@ High Dimensional Data Clustering
 HDDC is a model-based clustering method. It is based on the Gaussian Mixture Model and on the idea that the data lives in subspaces with a lower dimension than the dimension of the original space. It uses the Expectation - Maximisation algorithm to estimate the parameters of the model.
 }
 \usage{
-hddc(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, com_dim=NULL, itermax=60, eps=1e-3,
-     graph=FALSE, algo='EM', d="Cattell", init='kmeans', show=TRUE,
-	 mini.nb=c(5,10), scaling=FALSE, ctrl=1, dim.ctrl=1e-8, ...)
+hddc(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, 
+	com_dim=NULL, itermax=60, eps=1e-3, graph=FALSE, 
+	algo='EM', d="Cattell", init='kmeans', show=TRUE,
+	mini.nb=c(5,10), scaling=FALSE, ctrl=1, dim.ctrl=1e-8, ...)
 }
 
 \arguments{
@@ -43,8 +44,7 @@ A positive double. It is the stop criterion: the algorithm stops when the differ
 A character string indicating the algorithm to be used. The available algorithms are the Expectation-Maximisation ("EM"), the Classification E-M ("CEM") and the Stochastic E-M ("SEM"). The default algorithm is the "EM".
 }
    \item{d}{
-\describe{
-	\item{This parameter has several functions:}{
+	This parameter has several functions:
 		\itemize{
 			\item{\dQuote{Cattell}:}{
 				The Cattell's scree-test is used to gather the intrinsic dimension of each class. If the model is of common dimension (models 7 to 14), the scree-test is done on the covariance matrix of the whole dataset.
@@ -55,8 +55,6 @@ A character string indicating the algorithm to be used. The available algorithms
 			}
 			\item{Note that "Cattell" (resp. "BIC") can be abreviated to "C" (resp. "B") and that this argument is not case sensitive.}
 		}
-	}
-}
 }
   \item{init}{
 A character string or a vector of clusters. It is the way to initialize the E-M algorithm. There are five ways of initialization:
@@ -109,10 +107,12 @@ hddc returns an 'hdc' object; it's a list containing:
 \item{ posterior }{The matrix of the probabilities to belong to a class for each observation and each class.}
 }
 \references{
-Bouveyron C, Girard S and Schmid C, \dQuote{High-Dimensional Data Clustering, Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502-519, 2007
+Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
+
+Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 \author{
-L. Berge, C. Bouveyron, S. Girard 
+Berge, L. Bouveyron, C. and Girard, S. 
 }
 
 \seealso{

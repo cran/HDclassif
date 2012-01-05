@@ -35,10 +35,14 @@ Arguments based from or to other methods.
 	}
 }
 \references{
-Bouveyron C, Girard S and Schmid C, \dQuote{High-Dimensional Data Clustering, Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502-519, 2007
+Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discriminant Analysis}, \emph{Communications in Statistics: Theory and Methods}, vol. \bold{36} (14), pp. 2607--2623
+
+Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
+
+Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 \author{
-L. Berge, C. Bouveyron, S. Girard 
+Berge, L. Bouveyron, C. and Girard, S. 
 }
 
 \seealso{
