@@ -15,7 +15,7 @@ The algorithm and the initialization have to be chosen.
 }
 \value{ The plots of the clustering process.}
 \author{
-Berge, L. Bouveyron, C. and Girard, S. 
+Laurent Bergé, Charles Bouveyron and Stéphane Girard 
 }
 \seealso{
 \code{\link{hddc}}.

@@ -10,7 +10,7 @@ function(par,p,data=NULL){
 	prop <- par$prop
 	
 	if(length(b)==1){
-		#mise a jour des b pour comparaison avec modeles dimension variable
+		#update of b to set it as variable dimension models
 		eps <- sum(prop*d)
 		n_max <- if(model%in%c("ABQD","AJBQD")) length(par$ev) else ncol(par$ev)
 		b <- b*(n_max-eps)/(p-eps)

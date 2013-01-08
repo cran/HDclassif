@@ -1,5 +1,5 @@
 pck_hdda_prms  <- 
-function(data,cls,model,threshold,method,kname,dim.ctrl,com_dim=NULL){
+function(data,cls,model,threshold,method,kname,noise.ctrl,com_dim=NULL){
 	p <- ncol(data)
 	N <- nrow(data)
 	K <- max(cls)
@@ -10,7 +10,7 @@ function(data,cls,model,threshold,method,kname,dim.ctrl,com_dim=NULL){
 	
 	mu <- matrix(rowsum(data,cls)/n,K,p,dimnames=list("Class"=kname,"Group means:"=paste('V',1:p,sep='')))
 
-	#calcul des matrices de variance/covariance et des vecteurs propres
+	#Calculation of Var/covar matrices and of eigenvectors
 	
 	if( model%in%c("AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD") ){
 		if (N<p) {
@@ -29,7 +29,7 @@ function(data,cls,model,threshold,method,kname,dim.ctrl,com_dim=NULL){
 	}
 	
 	if(!model%in%c("AJBQD","ABQD")){
-		if(any(n<p)) Y <- vector(mode='list',length=K) #je cree le vecteur entier, c'est plus pratique
+		if(any(n<p)) Y <- vector(mode='list',length=K)
 		Q <- vector(mode='list',length=K)
 		ev <- matrix(NA,K,min(max(n),p))
 		for(i in which(n<p)){
@@ -45,27 +45,27 @@ function(data,cls,model,threshold,method,kname,dim.ctrl,com_dim=NULL){
 		}
 	}
 	
-	#calcul des dimensions + graphiques
+	#Intrinsic dimension calculations + graphical display
 	
 	if(model%in%c("AJBQD","ABQD")){
 		if(!is.null(com_dim)) method <- com_dim
-		if(method%in%c("C","B")) method <- pck_hdclassif_dim_choice(com_ev,n,method,threshold,FALSE,dim.ctrl)
+		if(method%in%c("C","B")) method <- pck_hdclassif_dim_choice(com_ev,n,method,threshold,FALSE,noise.ctrl)
 		d <- rep(method,K)
 	}
 	else if (model%in%c('AKJBKQKD','AKBKQKD','ABKQKD','AKJBQKD','AKBQKD','ABQKD')){
 		if(!is.null(com_dim)) method <- com_dim
-		if(method%in%c("C","B")) method <- pck_hdclassif_dim_choice(com_ev,n,method,threshold,FALSE,dim.ctrl)
+		if(method%in%c("C","B")) method <- pck_hdclassif_dim_choice(com_ev,n,method,threshold,FALSE,noise.ctrl)
 		d <- rep(method,K)
 		if( d[1]>min(n,p)-1 ) {
 			d[] <- min(n,p)-1
 			info <- paste("Information: d has been lowered to",d[1],"because of the class",kname[which.min(n)],"which has",min(n),"observations.")
 		}
-		dmax <- if(any(ev<dim.ctrl,na.rm=TRUE)) min(unlist(apply(ev<dim.ctrl,1,which)))-2 else Inf
+		dmax <- if(any(ev<noise.ctrl,na.rm=TRUE)) max(min(unlist(apply(ev<noise.ctrl,1,which)))-2,1) else Inf
 		if(d[1] > dmax) d[] <- dmax
 	}
-	else d <- pck_hdclassif_dim_choice(ev,n,method,threshold,FALSE,dim.ctrl)
+	else d <- pck_hdclassif_dim_choice(ev,n,method,threshold,FALSE,noise.ctrl)
 	
-	#mise en place des matrices Qi
+	#Setup of Qi matrices
 	
 	if (model%in%c("AJBQD","ABQD")){
 		if (N>=p) {
@@ -90,7 +90,7 @@ function(data,cls,model,threshold,method,kname,dim.ctrl,com_dim=NULL){
 		}
 	}
 	
-	#calcul des paramètres
+	#Calculation of the remaining parameters of the selected model
 	
 	if ( model%in%c('AKJBKQKDK','AKJBQKDK','AKJBKQKD','AKJBQKD') ){
 		ai <- matrix(NA,K,max(d),dimnames=list("Class"=kname,"Akj:"=paste("a",1:max(d),sep='')))

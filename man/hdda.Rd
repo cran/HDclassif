@@ -10,7 +10,7 @@ HDDA is a model-based discriminant analysis method assuming each class of the da
 hdda(data, cls, model='AkjBkQkDk', graph=FALSE, d="Cattell", 
 	threshold=0.2, com_dim=NULL, show=TRUE, scaling=FALSE, 
 	cv.dim=1:10, cv.threshold=c(.001,.005,.05,1:9*0.1), 
-	cv.vfold=10, LOO=FALSE, dim.ctrl=1e-8)
+	cv.vfold=10, LOO=FALSE, noise.ctrl=1e-8)
 }
 
 \arguments{
@@ -21,10 +21,11 @@ A matrix or a data frame of observations, assuming the rows are the observations
 The vector of the class of each observations, its type can be numeric or string.
 }
   \item{model}{
-The models used with the HDDA method are the following: \dQuote{AkjBkQkDk}, \dQuote{AkBkQkDk}, \dQuote{ABkQkDk}, \dQuote{AkjBQkDk}, \dQuote{AkBQkDk}, \dQuote{ABQkDk}, \dQuote{AkjBkQkD}, \dQuote{AkBkQkD}, \dQuote{ABkQkD}, \dQuote{AkjBQkD}, \dQuote{AkBQkD}, \dQuote{ABQkD}, \dQuote{AjBQD}, \dQuote{ABQD}, \dQuote{best} and \dQuote{dbest}. Note that the model names are not case sensitive. 
+The models used with the HDDA method are the following: \dQuote{AkjBkQkDk}, \dQuote{AkBkQkDk}, \dQuote{ABkQkDk}, \dQuote{AkjBQkDk}, \dQuote{AkBQkDk}, \dQuote{ABQkDk}, \dQuote{AkjBkQkD}, \dQuote{AkBkQkD}, \dQuote{ABkQkD}, \dQuote{AkjBQkD}, \dQuote{AkBQkD}, \dQuote{ABQkD}, \dQuote{AjBQD}, \dQuote{ABQD} and \dQuote{all}. Note that the model names are not case sensitive. 
 
 \describe{
-	\item{Akj are the parameters of the classes subspaces:}{
+	\item{Akj are the parameters of the classes subspaces}{
+		:
 		\itemize{
 		\item{if Akj: each class has its parameters and there is one parameter for each dimension}
 		\item{if Ak: the classes have different parameters but there is only one per class}
@@ -33,21 +34,24 @@ The models used with the HDDA method are the following: \dQuote{AkjBkQkDk}, \dQu
 		}
 	}
 
-	\item{Bk are the noises of the classes subspaces:}{
+	\item{Bk are the noises of the classes subspaces}{
+		:
 		\itemize{
 			\item{If Bk: each class has its proper noise}
 			\item{if B:  all classes have the same noise}
 		}
 	}
 
-	\item{Qk is the orientation matrix of each class:}{ 
+	\item{Qk is the orientation matrix of each class}{ 
+		:
 		\itemize{
 			\item{if Qk: all classes have its proper orientation matrix}
 			\item{if Q: all classes have the same orientation matrix}
 		}
 	}
 	
-	\item{Dk is the intrinsic dimension of each class:}{ 
+	\item{Dk is the intrinsic dimension of each class}{ 
+		:
 		\itemize{
 			\item{if Dk: the dimensions are free and proper to each class}
 			\item{if D: the dimension is common to all classes}
@@ -112,8 +116,8 @@ Note also that several models can be run at once, by using a vector of models (e
 	\item{LOO}{
 	If TRUE, it returns results (classes and posterior probabilities) for leave-one-out cross-validation.
 }
-	\item{dim.ctrl}{
-	This parameter avoids to have a too low value of the noise parameter b. When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to dim.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.
+	\item{noise.ctrl}{
+	This parameter avoids to have a too low value of the 'noise' parameter b. It garantees that the dimension selection process do not select too many dimensions (which leads to a potential too low value of the noise parameter b). When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to noise.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.
 }
 }
 
@@ -137,10 +141,10 @@ Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discrimi
 
 Bouveyron, C. Celeux, G. and Girard, S. (2010) dQuote{Intrinsic dimension estimation by maximum likelihood in probabilistic PCA}, Technical Report 440372, Universite Paris 1 Pantheon-Sorbonne
 
-Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
+Bergé, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 \author{
-Berge, L. Bouveyron, C. and Girard, S.  
+Laurent Bergé, Charles Bouveyron and Stéphane Girard  
 }
 \seealso{
 \code{\link{hddc}}, \code{\link{predict.hdc}}.

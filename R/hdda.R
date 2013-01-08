@@ -1,5 +1,5 @@
 hdda  <- 
-function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_dim=NULL,show=TRUE,scaling=FALSE,cv.dim=1:10,cv.threshold=c(.001,.005,.05,1:9*0.1),cv.vfold=10,LOO=FALSE,dim.ctrl=1e-8){
+function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_dim=NULL,show=TRUE,scaling=FALSE,cv.dim=1:10,cv.threshold=c(.001,.005,.05,1:9*0.1),cv.vfold=10,LOO=FALSE,noise.ctrl=1e-8){
 	Mod <- c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD","ALL")
 	Mod2 <- c("AKJBKQKDK","AKBKQKDK ","ABKQKDK  ","AKJBQKDK ","AKBQKDK  ","ABQKDK   ","AKJBKQKD ","AKBKQKD  ","ABKQKD   ","AKJBQKD  ","AKBQKD   ","ABQKD    ","AJBQD    ","ABQD     ")
 	
@@ -58,7 +58,7 @@ function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_di
 		posterior <- matrix(NA,N,K)
 		for(i in 1:N){
 			prms <- NULL
-			try(prms <- pck_hdda_prms(data[-i,],z[-i],model,threshold,d,names,dim.ctrl),silent=TRUE)
+			try(prms <- pck_hdda_prms(data[-i,],z[-i],model,threshold,d,names,noise.ctrl),silent=TRUE)
 			if(!is.null(prms)) {
 				res <- NULL
 				try(res <- predict.hdc(prms,data[i,]),silent=TRUE)
@@ -105,7 +105,7 @@ function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_di
 			prms <- NULL
 			i <- 0
 			while((i <- i+1)<=n_cv && is.null(prms) ){
-				try(prms <- pck_hdda_prms(data[-ind,],z[-ind],model,cv.threshold[i],cv.dim[i],names,dim.ctrl),silent=TRUE)
+				try(prms <- pck_hdda_prms(data[-ind,],z[-ind],model,cv.threshold[i],cv.dim[i],names,noise.ctrl),silent=TRUE)
 				if(!is.null(prms)) try(res[i] <-  res[i] + sum(predict.hdc(prms,data[ind,])$class==cls[ind]), silent=TRUE)
 				else {
 					N2[i] <- N2[i]-length(ind)
@@ -114,7 +114,7 @@ function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_di
 			}
 			
 			if(i<=n_cv) for(i in i:n_cv){
-				if(model%in%Mod[1:6]) d <- pck_hdclassif_dim_choice(prms$ev,as.vector(table(z[-ind])),"C",cv.threshold[i],FALSE,dim.ctrl)
+				if(model%in%Mod[1:6]) d <- pck_hdclassif_dim_choice(prms$ev,as.vector(table(z[-ind])),"C",cv.threshold[i],FALSE,noise.ctrl)
 				else d <- rep(cv.dim[i],K)
 				if(model%in%Mod[13:14]) prms$Q <- prms$Q[,1:d[1]]
 				else for(ii in 1:K) if(prms$d[ii]>1) prms$Q[[ii]] <- prms$Q[[ii]][,1:d[ii]]
@@ -161,7 +161,7 @@ function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_di
 		BIC <- c()
 		
 		for(i in mod_num){
-			e[[i]] <- pck_hdda_prms(data,z,Mod[i],threshold,d,names,dim.ctrl,com_dim)
+			e[[i]] <- pck_hdda_prms(data,z,Mod[i],threshold,d,names,noise.ctrl,com_dim)
 			BIC[i] <- pck_hdda_bic(e[[i]],p)
 		}
 		
@@ -196,15 +196,15 @@ function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_di
 		BIC <- c()
 		
 		#models with var dim
-		e[[1]] <- pck_hdda_prms(data,z,Mod[1],threshold,d,names,dim.ctrl)
+		e[[1]] <- pck_hdda_prms(data,z,Mod[1],threshold,d,names,noise.ctrl)
 		for (i in 2:6) e[[i]] <- pck_hdda_prms_bis(Mod[i],e[[1]],p)
 
 		#models with common dim	
-		e[[7]] <- pck_hdda_prms(data,z,Mod[7],threshold,d,names,dim.ctrl,com_dim)
+		e[[7]] <- pck_hdda_prms(data,z,Mod[7],threshold,d,names,noise.ctrl,com_dim)
 		for (i in 8:12) e[[i]] <- pck_hdda_prms_bis(Mod[i],e[[7]],p)
 		
 		#models 13 and 14: common var/covar matrix
-		e[[13]] <- pck_hdda_prms(data,z,Mod[13],threshold,d,names,dim.ctrl,com_dim)
+		e[[13]] <- pck_hdda_prms(data,z,Mod[13],threshold,d,names,noise.ctrl,com_dim)
 		e[[14]] <- pck_hdda_prms_bis(Mod[14],e[[13]],p)
 		
 		#BIC calculation
@@ -235,7 +235,7 @@ function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_di
 		return(prms)
 	}
 	else {
-		prms <- pck_hdda_prms(data,z,model,threshold,d,names,dim.ctrl,com_dim)
+		prms <- pck_hdda_prms(data,z,model,threshold,d,names,noise.ctrl,com_dim)
 		prms$BIC <- pck_hdda_bic(prms,p)
 		prms$scaling <- scaling
 		prms$threshold <- if(save_d=="C") threshold else NULL

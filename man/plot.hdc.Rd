@@ -7,7 +7,7 @@ Cattell's Scree-Test for 'hdc' class objects.
 This function plots Cattell's scree-test or the BIC selection, using parameters coming from \var{hdda} or \var{hddc} functions.
 }
 \usage{
-\method{plot}{hdc}(x, method = NULL, threshold = NULL, dim.ctrl=1e-8, ...)
+\method{plot}{hdc}(x, method = NULL, threshold = NULL, noise.ctrl=1e-8, ...)
 }
 
 \arguments{
@@ -21,8 +21,8 @@ A 'hdc' class object obtained using \var{hdda} or \var{hddc} methods.
   \item{threshold}{
 The threshold used in Cattell's Scree-Test. By default it takes the threshold in the argument x, if none, the default value of the threshold is 0.2.
 }
-	\item{dim.ctrl}{
-	This parameter avoids to have a too low value of the noise parameter b. When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to dim.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.
+	\item{noise.ctrl}{
+	This parameter avoids to have a too low value of the 'noise' parameter b. It garantees that the dimension selection process do not select too many dimensions (which leads to a potential too low value of the noise parameter b). When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to noise.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.
 }
 \item{...}{
 Arguments based from or to other methods.
@@ -39,10 +39,10 @@ Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discrimi
 
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
 
-Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
+Bergé, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 \author{
-Berge, L. Bouveyron, C. and Girard, S. 
+Laurent Bergé, Charles Bouveyron and Stéphane Girard
 }
 
 \seealso{

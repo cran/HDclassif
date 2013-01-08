@@ -1,5 +1,5 @@
 pck_hdclassif_dim_choice <- 
-function(ev,n,method,threshold,graph,dim.ctrl){
+function(ev,n,method,threshold,graph,noise.ctrl){
 	N <- sum(n)
 	prop <- n/N
 	K <- if(is.matrix(ev)) nrow(ev) else 1
@@ -9,13 +9,13 @@ function(ev,n,method,threshold,graph,dim.ctrl){
 			dev <- abs(apply(ev,1,diff))
 			max_dev <- apply(dev,2,max,na.rm=TRUE)
 			dev <- dev/rep(max_dev,each=p-1)
-			d <- apply((dev>threshold)*(1:(p-1))*t(ev[,-1]>dim.ctrl),2,which.max)
+			d <- apply((dev>threshold)*(1:(p-1))*t(ev[,-1]>noise.ctrl),2,which.max)
 			
 			if(graph){
 				par(mfrow=c(K*(K<=3)+2*(K==4)+3*(K>4 && K<=9)+4*(K>9),1+floor(K/4)-1*(K==12)+1*(K==7)))
 				for(i in 1:K){
 					sub1 <- paste("Class #",i,", d",i,"=",d[i],sep="")
-					Nmax <- max(which(ev[i,]>dim.ctrl))-1
+					Nmax <- max(which(ev[i,]>noise.ctrl))-1
 					plot(dev[1:(min(d[i]+5,Nmax)),i],type="l",col="blue",main=paste("Cattell's Scree-Test\n",sub1,sep=""),ylab=paste("threshold =",threshold),xlab="Dimension",ylim=c(0,1.05))
 					abline(h=threshold,lty=3)  	
 					points(d[i],dev[d[i],i],col='red')
@@ -28,7 +28,7 @@ function(ev,n,method,threshold,graph,dim.ctrl){
 			
 			for (i in 1:K) {
 				B <- c()
-				Nmax <- max(which(ev[i,]>dim.ctrl))-1
+				Nmax <- max(which(ev[i,]>noise.ctrl))-1
 				p2 <- sum(!is.na(ev[i,]))
 				Bmax <- -Inf
 				for (kdim in 1:Nmax){
@@ -58,7 +58,7 @@ function(ev,n,method,threshold,graph,dim.ctrl){
 		p <- length(ev)
 		if(method=="C"){
 			dvp <- abs(diff(ev))
-			Nmax <- max(which(ev>dim.ctrl))-1
+			Nmax <- max(which(ev>noise.ctrl))-1
 			if (p==2) d <- 1
 			else d <- max(which(dvp[1:Nmax]>=threshold*max(dvp[1:Nmax])))
 			diff_max <- max(dvp[1:Nmax])
@@ -71,7 +71,7 @@ function(ev,n,method,threshold,graph,dim.ctrl){
 		}
 		else if(method=="B"){
 			d <- 0
-			Nmax <- max(which(ev>dim.ctrl))-1
+			Nmax <- max(which(ev>noise.ctrl))-1
 			B <- c()
 			Bmax <- -Inf
 			for (kdim in 1:Nmax){

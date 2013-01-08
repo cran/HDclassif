@@ -1,5 +1,5 @@
 demo_hddc_crabs <-
-function(DATA,k=4,model='AKBKQKD',threshold=0.2,method='C',algo='EM',itermax=80,eps=1e-2,init='kmeans',ZZ=NULL,ctrl=1,dim.ctrl=1e-8,...){ 
+function(DATA,k=4,model='AKBKQKD',threshold=0.2,method='C',algo='EM',itermax=80,eps=1e-2,init='kmeans',ZZ=NULL,min.individuals=2,noise.ctrl=1e-8,...){ 
 	com_dim <- 1
 	Mod <- c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD")
 	p <- ncol(DATA)
@@ -12,7 +12,7 @@ function(DATA,k=4,model='AKBKQKD',threshold=0.2,method='C',algo='EM',itermax=80,
 		S <- crossprod(DATA-matrix(MU,N,p,byrow=TRUE))/N
 		donnees <- eigen(S,symmetric=TRUE)
 		ev <- donnees$values
-		d <- if(is.numeric(method)) method else pck_hdclassif_dim_choice(ev,N,method,threshold,FALSE,dim.ctrl)
+		d <- if(is.numeric(method)) method else pck_hdclassif_dim_choice(ev,N,method,threshold,FALSE,noise.ctrl)
 		a <- ev[1:d]
 		b <- sum(ev[(d[1]+1):p])/(p-d[1])
 		
@@ -47,8 +47,8 @@ function(DATA,k=4,model='AKBKQKD',threshold=0.2,method='C',algo='EM',itermax=80,
 	test <- Inf
 	while ((I <- I+1)<=itermax && test>=eps){
 		if (algo!='EM' && I!=1) t <- t2
-		if (k>1 && (any(is.na(t)) || any(colSums(t>1/k)<=ctrl*N/100))) return(1)
-		m <- pck_hddc_m_step(DATA,k,t,model,threshold,method,dim.ctrl,1)
+		if (k>1 && (any(is.na(t)) || any(colSums(t>1/k)<min.individuals))) return(1)
+		m <- pck_hddc_m_step(DATA,k,t,model,threshold,method,noise.ctrl,1)
 		t <- pck_hddc_e_step(DATA,m)
 		L <- t$L
 		t <- t$t

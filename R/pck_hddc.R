@@ -1,5 +1,5 @@
 pck_hddc <-
-function(DATA,K,model,threshold,method,algo,itermax,eps,init,mini.nb,ctrl,dim.ctrl,com_dim=NULL,...){ 
+function(DATA,K,model,threshold,method,algo,itermax,eps,init,mini.nb,min.individuals,noise.ctrl,com_dim=NULL,...){ 
 	Mod <- c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD")
 	p <- ncol(DATA)
 	N <- nrow(DATA)
@@ -15,7 +15,7 @@ function(DATA,K,model,threshold,method,algo,itermax,eps,init,mini.nb,ctrl,dim.ct
 			S <- crossprod(DATA-matrix(MU,N,p,byrow=TRUE))/N
 			com_ev <- eigen(S,symmetric=TRUE,only.values=TRUE)$values
 		}
-		if(is.null(com_dim)) com_dim <- pck_hdclassif_dim_choice(com_ev,N,method,threshold,FALSE,dim.ctrl)
+		if(is.null(com_dim)) com_dim <- pck_hdclassif_dim_choice(com_ev,N,method,threshold,FALSE,noise.ctrl)
 	}
 	if (K>1){
 		t <- matrix(0,N,K)
@@ -29,7 +29,7 @@ function(DATA,K,model,threshold,method,algo,itermax,eps,init,mini.nb,ctrl,dim.ct
 			S <- crossprod(DATA-matrix(MU,N,p,byrow=TRUE))/N
 			donnees <- eigen(S,symmetric=TRUE)
 			ev <- donnees$values
-			d <- if(is.numeric(method)) method else pck_hdclassif_dim_choice(ev,N,method,threshold,FALSE,dim.ctrl)
+			d <- if(is.numeric(method)) method else pck_hdclassif_dim_choice(ev,N,method,threshold,FALSE,noise.ctrl)
 			a <- ev[1:d]
 			b <- sum(ev[(d[1]+1):p])/(p-d[1])
 			
@@ -55,7 +55,7 @@ function(DATA,K,model,threshold,method,algo,itermax,eps,init,mini.nb,ctrl,dim.ct
 		else if (init=='mini-em'){
 			prms_best <- 1
 			for (i in 1:mini.nb[1]){
-				prms <- pck_hddc(DATA,K,model,threshold,method,algo,mini.nb[2],0,'random',mini.nb,ctrl,dim.ctrl,com_dim)
+				prms <- pck_hddc(DATA,K,model,threshold,method,algo,mini.nb[2],0,'random',mini.nb,min.individuals,noise.ctrl,com_dim)
 				if(length(prms)!=1){
 					if (length(prms_best)==1) prms_best <- prms
 					else if (prms_best$loglik[length(prms_best$loglik)]<prms$loglik[length(prms$loglik)]) prms_best <- prms
@@ -78,8 +78,8 @@ function(DATA,K,model,threshold,method,algo,itermax,eps,init,mini.nb,ctrl,dim.ct
 	test <- Inf
 	while ((I <- I+1)<=itermax && test>=eps){
 		if (algo!='EM' && I!=1) t <- t2
-		if (K>1 && (any(is.na(t)) || any(colSums(t>1/K)<=ctrl*N/100))) return(1)
-		m <- pck_hddc_m_step(DATA,K,t,model,threshold,method,dim.ctrl,com_dim)
+		if (K>1 && (any(is.na(t)) || any(colSums(t>1/K)<min.individuals))) return(1)
+		m <- pck_hddc_m_step(DATA,K,t,model,threshold,method,noise.ctrl,com_dim)
 		t <- pck_hddc_e_step(DATA,m)
 		L <- t$L
 		t <- t$t

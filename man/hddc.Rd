@@ -10,7 +10,7 @@ HDDC is a model-based clustering method. It is based on the Gaussian Mixture Mod
 hddc(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, 
 	com_dim=NULL, itermax=60, eps=1e-3, graph=FALSE, 
 	algo='EM', d="Cattell", init='kmeans', show=TRUE,
-	mini.nb=c(5,10), scaling=FALSE, ctrl=1, dim.ctrl=1e-8, ...)
+	mini.nb=c(5,10), scaling=FALSE, min.individuals=2, noise.ctrl=1e-8, ...)
 }
 
 \arguments{
@@ -35,7 +35,7 @@ A float stricly within 0 and 1. It is the threshold used in the Cattell's Scree-
 The maximum number of iterations allowed. The default is 60.
 }
   \item{eps}{
-A positive double. It is the stop criterion: the algorithm stops when the difference between two successive Log Likelihoods divided by the number of observations is lower than eps.
+A positive double. It is the stopping criterion: the algorithm stops when the difference between two successive Log Likelihoods is lower than \sQuote{eps}.
 }
   \item{graph}{
 	It is for comparison sake only, when several estimations are run at the same time (either when using several models, or when using cross-validation to select the best dimension/threshold). If graph = TRUE, the plot of the results of all estimations is displayed. Default is FALSE.
@@ -79,11 +79,11 @@ A vector of integers of length two. This parameter is used in the \dQuote{mini-e
   \item{scaling}{
 Logical: whether to scale the dataset (mean=0 and standard-error=1 for each variable) or not. By default the data is not scaled.
 }
-  \item{ctrl}{
-The algorithm will stop when the sum of the posterior probabilities of belonging to a class is inferior to ctrl. By default ctrl=1, that means that the algorithm stops when a class has less than 1 percent of the individuals in it.
+  \item{min.individuals}{
+This parameter is used to control for the minimum population of a class. If the population of a class becomes stricly inferior to 'min.individuals' then the algorithm stops and gives the message: 'pop<min.indiv.'. Here the meaning of "population of a class" is the sum of its posterior probabilities. The value of 'min.individuals' cannot be lower than 2.
 }
-	\item{dim.ctrl}{
-	This parameter avoids to have a too low value of the noise parameter b. When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to dim.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.
+	\item{noise.ctrl}{
+	This parameter avoids to have a too low value of the 'noise' parameter b. It garantees that the dimension selection process do not select too many dimensions (which leads to a potential too low value of the noise parameter b). When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to noise.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.
 }
   \item{...}{Any arguments that can be used by the function "kmeans" when this initialization is selected (namely: algorithm; nstart; iter.max).}
 }
@@ -109,10 +109,10 @@ hddc returns an 'hdc' object; it's a list containing:
 \references{
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
 
-Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
+Bergé, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 \author{
-Berge, L. Bouveyron, C. and Girard, S. 
+Laurent Bergé, Charles Bouveyron and Stéphane Girard
 }
 
 \seealso{

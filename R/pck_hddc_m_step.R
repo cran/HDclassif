@@ -1,5 +1,5 @@
 pck_hddc_m_step  <- 
-function(x,K,t,model,threshold,method,dim.ctrl,com_dim){
+function(x,K,t,model,threshold,method,noise.ctrl,com_dim){
 	N <- nrow(x)
 	p <- ncol(x)
 	prop <- c()
@@ -12,7 +12,7 @@ function(x,K,t,model,threshold,method,dim.ctrl,com_dim){
 	n_bis <- c()
 	for(i in 1:K) n_bis[i] <- length(ind[[i]])
 	
-	#calcul des matrices de variances/covariances
+	#Calculation on Var/Covar matrices
 	
 	if (N<p) {
 		if( model%in%c("AJBQD","ABQD") ){
@@ -49,17 +49,17 @@ function(x,K,t,model,threshold,method,dim.ctrl,com_dim){
 		}
 	}	
 	
-	#selection des dimensions
+	#Intrinsic dimensions selection
 	
 	if (model%in%c("AJBQD","ABQD")) d <- rep(com_dim,length=K)
 	else if ( model%in%c("AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD") ){
-		dmax <- min(apply((ev>dim.ctrl)*rep(1:ncol(ev),each=K),1,which.max))-1
-		if(com_dim>dmax) com_dim <- dmax
+		dmax <- min(apply((ev>noise.ctrl)*rep(1:ncol(ev),each=K),1,which.max))-1
+		if(com_dim>dmax) com_dim <- max(dmax,1)
 		d <- rep(com_dim,length=K)
 	}
-	else d <- pck_hdclassif_dim_choice(ev,n,method,threshold,FALSE,dim.ctrl)
+	else d <- pck_hdclassif_dim_choice(ev,n,method,threshold,FALSE,noise.ctrl)
 	
-	#mise en place des matrices Qk	
+	#Setup of the Qi matrices	
 	
 	if ( model%in%c("AJBQD","ABQD") ){
 		if (N>=p) Q <- matrix(donnees$vectors[,1:d[1]],p,d[1])
@@ -80,7 +80,7 @@ function(x,K,t,model,threshold,method,dim.ctrl,com_dim){
 		}
 	}
 	
-	#calcul des paramètres	
+	#Calculation of the remaining parameters of the selected model	
 	
 	ai <- matrix(NA,K,max(d))
 	if ( model%in%c('AKJBKQKDK','AKJBQKDK','AKJBKQKD','AKJBQKD') ){
