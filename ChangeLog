@@ -1,3 +1,7 @@
+HDclassif version 1.2.2 2015-02-14:
+- The ARI criterion is introduced in the function predict for hddc objects. It is a criterion to assess the goodness of fit of the clustering. ARI completely replaces the former "best classication rate", as the algorithm used to compute it was flawed.
+- The readability of help files is improved.
+
 HDclassif version 1.2.2 2013-01-15:
 
 Help files:

@@ -6,14 +6,14 @@
 High Dimensional Discriminant Analysis and Data Clustering
 }
 \description{
-New disciminant analysis and data clustering methods for high dimensional data, based on the asumption that high-dimensional data live in different subspaces with low dimensionality, proposing a new parametrization of the Gaussian mixture model which combines the ideas of dimension reduction and constraints on the model.
+Disciminant analysis and data clustering methods for high dimensional data, based on the asumption that high-dimensional data live in different subspaces with low dimensionality, proposing a new parametrization of the Gaussian mixture model which combines the ideas of dimension reduction and constraints on the model.
 }
 \details{
 \tabular{ll}{
 Package: \tab HDclassif\cr
 Type: \tab Package\cr
-Version: \tab 1.2.2\cr
-Date: \tab 2013-01-08\cr
+Version: \tab 1.2.3\cr
+Date: \tab 2013-02-14\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
@@ -22,16 +22,16 @@ The supervised method uses the \var{hdda} function to get the data parameters an
 The unsupervised method is implemented in the \var{hddc} function, and once the parameters are estimated, the \var{predict} gives the class prediction of other datasets. The method used in the hddc is based on the Expectation - Maximisation algorithm.
 }
 \author{
-Laurent Bergé, Charles Bouveyron and Stéphane Girard
+Laurent Berge, Charles Bouveyron and Stephane Girard
 
-Maintainer: Laurent Bergé <laurent.berge at hotmail.fr> 
+Maintainer: Laurent Berge <laurent.berge at u-bordeaux.fr> 
 }
 \references{
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discriminant Analysis}, \emph{Communications in Statistics: Theory and Methods}, vol. \bold{36} (14), pp. 2607--2623
 
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
 
-Bergé, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
+Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 
 \keyword{ package }

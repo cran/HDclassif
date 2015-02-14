@@ -11,7 +11,7 @@ The Crabs data frame has 200 rows and 6 columns, describing 5 morphological meas
 \format{
   A data frame with 200 observations on the following 6 variables.
   \describe{
-    \item{\code{class}}{Type of the crabs : the first character represents the species - "B" or "O" for blue or orange-, the second represents the sex -"M" or "F" for male or female-.}
+    \item{\code{class}}{Type of the crabs: the first character represents the species - "B" or "O" for blue or orange-, the second represents the sex -"M" or "F" for male or female-.}
     \item{\code{FL}}{Frontal lob size (mm).}
     \item{\code{RW}}{Rear width (mm).}
     \item{\code{CL}}{Carapace length (mm).}

@@ -46,7 +46,7 @@ The noise of each class.
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discriminant Analysis}, \emph{Communications in Statistics : Theory and Methods}, vol. \bold{36}(14), pp. 2607--2623
 }
 \author{
-Laurent Bergé, Charles Bouveyron and Stéphane Girard 
+Laurent Berge, Charles Bouveyron and Stephane Girard 
 }
 \seealso{
 \code{\link{hddc}}, \code{\link{hdda}}.

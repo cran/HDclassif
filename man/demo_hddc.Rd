@@ -11,11 +11,11 @@ This function should only be used in demo(hddc).
 demo_hddc()
 }
 \note{
-The algorithm and the initialization have to be chosen.
+The algorithm and the initialization are interactively chosen.
 }
 \value{ The plots of the clustering process.}
 \author{
-Laurent Bergé, Charles Bouveyron and Stéphane Girard 
+Laurent Berge, Charles Bouveyron and Stephane Girard 
 }
 \seealso{
 \code{\link{hddc}}.

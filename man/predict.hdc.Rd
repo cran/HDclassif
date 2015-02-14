@@ -7,12 +7,12 @@ Prediction method for 'hdc' class objects.
 This function computes the class prediction of a dataset with respect to the model-based supervised and unsupervised classification methods \code{\link{hdda}} and \code{\link{hddc}}.
 }
 \usage{
-\method{predict}{hdc}(object, data, cls = NULL, ...)
+\method{predict}{hdc}(object, data, cls = NULL, \dots)
 }
 
 \arguments{
   \item{object}{
-An 'hdc' class object obtained by using hdda(...) or hddc(...) function.
+An 'hdc' class object obtained by using hdda or hddc function.
 }
   \item{data}{
 A matrix or a data frame of observations, assuming the rows are the observations and the columns the variables. Note that NAs are not allowed.
@@ -20,25 +20,25 @@ A matrix or a data frame of observations, assuming the rows are the observations
   \item{cls}{
 It is optional and used to be compared to the predicted classes, default is NULL.
 }
-\item{...}{
+\item{\dots}{
 Arguments based from or to other methods.
 }
 }
 \value{
 	\item{class}{vector of the predicted class.}
 	\item{prob}{The matrix of the probabilities to belong to a class for each observation and each class.}
-	If the initial class vector is given to the argument \sQuote{cls} then the correct classification rate and the confusion matrix are shown on the R console. Also the following object is returned:
-	\item{confusion}{The confusion matrix of the classification.}
+	If the initial class vector is given to the argument \sQuote{cls} then the adjusted rand index (ARI) is also returned. Also the following object is returned:
+	\item{ARI}{The confusion matrix of the classification.}
 }
 \references{
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discriminant Analysis}, \emph{Communications in Statistics: Theory and Methods}, vol. \bold{36} (14), pp. 2607--2623
 
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
 
-Bergé, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
+Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 \author{
-Laurent Bergé, Charles Bouveyron and Stéphane Girard
+Laurent Berge, Charles Bouveyron and Stephane Girard
 }
 
 \seealso{

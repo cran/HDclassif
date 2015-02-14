@@ -7,7 +7,7 @@ Cattell's Scree-Test for 'hdc' class objects.
 This function plots Cattell's scree-test or the BIC selection, using parameters coming from \var{hdda} or \var{hddc} functions.
 }
 \usage{
-\method{plot}{hdc}(x, method = NULL, threshold = NULL, noise.ctrl=1e-8, ...)
+\method{plot}{hdc}(x, method = NULL, threshold = NULL, noise.ctrl=1e-8, \dots)
 }
 
 \arguments{
@@ -24,7 +24,7 @@ The threshold used in Cattell's Scree-Test. By default it takes the threshold in
 	\item{noise.ctrl}{
 	This parameter avoids to have a too low value of the 'noise' parameter b. It garantees that the dimension selection process do not select too many dimensions (which leads to a potential too low value of the noise parameter b). When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to noise.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.
 }
-\item{...}{
+\item{\dots}{
 Arguments based from or to other methods.
 }
 }
@@ -39,10 +39,10 @@ Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discrimi
 
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
 
-Bergé, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
+Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 \author{
-Laurent Bergé, Charles Bouveyron and Stéphane Girard
+Laurent Berge, Charles Bouveyron and Stephane Girard
 }
 
 \seealso{

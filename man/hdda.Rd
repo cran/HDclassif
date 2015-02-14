@@ -21,76 +21,12 @@ A matrix or a data frame of observations, assuming the rows are the observations
 The vector of the class of each observations, its type can be numeric or string.
 }
   \item{model}{
-The models used with the HDDA method are the following: \dQuote{AkjBkQkDk}, \dQuote{AkBkQkDk}, \dQuote{ABkQkDk}, \dQuote{AkjBQkDk}, \dQuote{AkBQkDk}, \dQuote{ABQkDk}, \dQuote{AkjBkQkD}, \dQuote{AkBkQkD}, \dQuote{ABkQkD}, \dQuote{AkjBQkD}, \dQuote{AkBQkD}, \dQuote{ABQkD}, \dQuote{AjBQD}, \dQuote{ABQD} and \dQuote{all}. Note that the model names are not case sensitive. 
-
-\describe{
-	\item{Akj are the parameters of the classes subspaces}{
-		:
-		\itemize{
-		\item{if Akj: each class has its parameters and there is one parameter for each dimension}
-		\item{if Ak: the classes have different parameters but there is only one per class}
-		\item{if Aj: all the classes have the same parameters for each dimension (it's a particular case with a common orientation matrix)}
-		\item{if A: all classes have the same one parameter}
-		}
-	}
-
-	\item{Bk are the noises of the classes subspaces}{
-		:
-		\itemize{
-			\item{If Bk: each class has its proper noise}
-			\item{if B:  all classes have the same noise}
-		}
-	}
-
-	\item{Qk is the orientation matrix of each class}{ 
-		:
-		\itemize{
-			\item{if Qk: all classes have its proper orientation matrix}
-			\item{if Q: all classes have the same orientation matrix}
-		}
-	}
-	
-	\item{Dk is the intrinsic dimension of each class}{ 
-		:
-		\itemize{
-			\item{if Dk: the dimensions are free and proper to each class}
-			\item{if D: the dimension is common to all classes}
-		}
-	}
-	\item{The model \dQuote{all}:}{It will compute all the models, give their BIC and keep the model with the highest BIC value.}
-}
-Instead of writing the model names, they can also be specified using an integer. 1 represents the most general model (\dQuote{AkjBkQkDk}) while 14 is the most constrained (\dQuote{ABQD}), the others  number/name matching are given below: 
-\tabular{lcclc}{
-AkjBkQkDk \tab   1   \tab   \tab  AkjBkQkD \tab   7   \cr 
-AkBkQkDk \tab   2   \tab \tab  AkBkQkD \tab   8   \cr   
-ABkQkDk \tab   3   \tab  \tab ABkQkD \tab   9   \cr   
-AkjBQkDk \tab   4   \tab  \tab  AkjBQkD \tab   10   \cr   
-AkBQkDk \tab   5   \tab  \tab  AkBQkD \tab   11   \cr   
-ABQkDk \tab   6   \tab  \tab  ABQkD \tab   12  \cr
-AjBQD \tab 13 \tab  \tab ABQD \tab 14
-}
-Note also that several models can be run at once, by using a vector of models (e.g. model = c("AKBKQKD","AKJBQKDK","AJBQD") is equivalent to model = c(8,4,13); to run the 6 first models, use model=1:6). If all the models are to be run, model="all" is faster than model=1:14. 
-
+The models used with the HDDA method are the following: \dQuote{AkjBkQkDk}, \dQuote{AkBkQkDk}, \dQuote{ABkQkDk}, \dQuote{AkjBQkDk}, \dQuote{AkBQkDk}, \dQuote{ABQkDk}, \dQuote{AkjBkQkD}, \dQuote{AkBkQkD}, \dQuote{ABkQkD}, \dQuote{AkjBQkD}, \dQuote{AkBQkD}, \dQuote{ABQkD}, \dQuote{AjBQD}, \dQuote{ABQD} and \dQuote{all}. Note that the model names are not case sensitive. See details for more informations.
 }
   \item{graph}{  It is for comparison sake only, when several estimations are run at the same time (either when using several models, or when using cross-validation to select the best dimension/threshold). If graph = TRUE, the plot of the results of all estimations is displayed. Default is FALSE.
 }
   \item{d}{
-  This parameter has several functions:
-		\itemize{
-			\item{\dQuote{Cattell}:}{
-				The Cattell's scree-test is used to gather the intrinsic dimension of each class. If the model is of common dimension (models 7 to 14), the scree-test is done on the covariance matrix of the whole dataset.
-			}
-			\item{\dQuote{BIC}:}{
-				The intrinsic dimensions are selected with the BIC criterion. See Bouveyron \emph{et al.} (2010) for a discussion of this topic.
-				For common dimension models, the procedure is done on the covariance matrix of the whole dataset.
-			}
-			\item{\dQuote{CV}:}{
-				A V-fold cross-validation (CV) can be done in order to select the best threshold (for all models) or the best common dimensions (models 7 to 14).  
-				The V-fold cross-validation is done for each dimension (respectively threshold) in the argument \dQuote{cv.dim} (resp. \dQuote{cv.threshold}), then the dimension (resp. threshold) that gives the best good classification rate is kept.  
-				The dataset is split in \dQuote{cv.vfold} (default is 10) \emph{random} subsamples, then CV is done for each sample: each of them is used as validation data while the remaining data is used as training data. For sure, if \dQuote{cv.vfold} equals the number of observations, then this CV is equivalent to a leave-one-out.
-			}
-			\item{Note that "Cattell" (resp. "BIC") can be abreviated to "C" (resp. "B") and that this argument is not case sensitive.}
-		}
+  Either \dQuote{Cattell} (default), \dQuote{BIC} or \dQuote{CV}. See details for more information.
 }
   \item{threshold}{
   A float stricly within 0 and 1. It is the threshold used in the Cattell's Scree-Test.
@@ -136,15 +72,83 @@ hdda returns an 'hdc' object; it's a list containing:
 \item{ BIC }{The BIC value of the model used.}
 \item{ scaling }{The centers and the standard deviation of the original dataset.}
 }
+
+\details{
+Some information on the signification of the model names:
+\describe{
+	\item{Akj are the parameters of the classes subspaces:}{
+		\itemize{
+		\item{if Akj: each class has its parameters and there is one parameter for each dimension}
+		\item{if Ak: the classes have different parameters but there is only one per class}
+		\item{if Aj: all the classes have the same parameters for each dimension (it's a particular case with a common orientation matrix)}
+		\item{if A: all classes have the same one parameter}
+		}
+	}
+
+	\item{Bk are the noises of the classes subspaces:}{
+		\itemize{
+			\item{If Bk: each class has its proper noise}
+			\item{if B:  all classes have the same noise}
+		}
+	}
+
+	\item{Qk is the orientation matrix of each class:}{ 
+		\itemize{
+			\item{if Qk: all classes have its proper orientation matrix}
+			\item{if Q: all classes have the same orientation matrix}
+		}
+	}
+	
+	\item{Dk is the intrinsic dimension of each class:}{ 
+		\itemize{
+			\item{if Dk: the dimensions are free and proper to each class}
+			\item{if D: the dimension is common to all classes}
+		}
+	}
+}
+The model \dQuote{all} will compute all the models, give their BIC and keep the model with the highest BIC value.
+Instead of writing the model names, they can also be specified using an integer.  1 represents the most general model (\dQuote{AkjBkQkDk}) while 14 is the most constrained (\dQuote{ABQD}), the others  number/name matching are given below. Note also that several models can be run at once, by using a vector of models (e.g. model = c("AKBKQKD","AKJBQKDK","AJBQD") is equivalent to model = c(8,4,13); to run the 6 first models, use model=1:6). If all the models are to be run, model="all" is faster than model=1:14. 
+\tabular{lcclc}{
+AkjBkQkDk \tab   1   \tab   \tab  AkjBkQkD \tab   7   \cr 
+AkBkQkDk \tab   2   \tab \tab  AkBkQkD \tab   8   \cr   
+ABkQkDk \tab   3   \tab  \tab ABkQkD \tab   9   \cr   
+AkjBQkDk \tab   4   \tab  \tab  AkjBQkD \tab   10   \cr   
+AkBQkDk \tab   5   \tab  \tab  AkBQkD \tab   11   \cr   
+ABQkDk \tab   6   \tab  \tab  ABQkD \tab   12  \cr
+AjBQD \tab 13 \tab  \tab ABQD \tab 14
+}
+
+The parameter d, is used to select the intrinsic dimensions of the subclasses. Here are his definictions:
+		\itemize{
+			\item{\dQuote{Cattell}:}{
+				The Cattell's scree-test is used to gather the intrinsic dimension of each class. If the model is of common dimension (models 7 to 14), the scree-test is done on the covariance matrix of the whole dataset.
+			}
+			\item{\dQuote{BIC}:}{
+				The intrinsic dimensions are selected with the BIC criterion. See Bouveyron \emph{et al.} (2010) for a discussion of this topic.
+				For common dimension models, the procedure is done on the covariance matrix of the whole dataset.
+			}
+			\item{\dQuote{CV}:}{
+				A V-fold cross-validation (CV) can be done in order to select the best threshold (for all models) or the best common dimensions (models 7 to 14).  
+				The V-fold cross-validation is done for each dimension (respectively threshold) in the argument \dQuote{cv.dim} (resp. \dQuote{cv.threshold}), then the dimension (resp. threshold) that gives the best good classification rate is kept.  
+				The dataset is split in \dQuote{cv.vfold} (default is 10) \emph{random} subsamples, then CV is done for each sample: each of them is used as validation data while the remaining data is used as training data. For sure, if \dQuote{cv.vfold} equals the number of observations, then this CV is equivalent to a leave-one-out.
+			}
+			\item{Note that "Cattell" (resp. "BIC") can be abreviated to "C" (resp. "B") and that this argument is not case sensitive.}
+		}
+
+
+}
+
+
+
 \references{
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discriminant Analysis}, \emph{Communications in Statistics: Theory and Methods}, vol. \bold{36} (14), pp. 2607--2623
 
-Bouveyron, C. Celeux, G. and Girard, S. (2010) dQuote{Intrinsic dimension estimation by maximum likelihood in probabilistic PCA}, Technical Report 440372, Universite Paris 1 Pantheon-Sorbonne
+Bouveyron, C. Celeux, G. and Girard, S. (2010) \dQuote{Intrinsic dimension estimation by maximum likelihood in probabilistic PCA}, Technical Report 440372, Universite Paris 1 Pantheon-Sorbonne
 
-Bergé, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
+Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
 }
 \author{
-Laurent Bergé, Charles Bouveyron and Stéphane Girard  
+Laurent Berge, Charles Bouveyron and Stephane Girard  
 }
 \seealso{
 \code{\link{hddc}}, \code{\link{predict.hdc}}.
