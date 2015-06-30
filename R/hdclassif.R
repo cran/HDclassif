@@ -1,5 +1,4 @@
-demo_hddc  <- 
-function(){
+demo_hddc  <- function(){
 	myEnv <- new.env()
 	data(list="Crabs",envir = myEnv)
 	myData <- get("Crabs",envir=myEnv)
@@ -26,12 +25,7 @@ function(){
 	}
 }
 
-
-
-##########
-
-demo_hddc_acp <-
-function(X,z,hd=NULL,...){
+demo_hddc_acp <- function(X,z,hd=NULL,...){
 	Q <- hd$Q
 	MU <- hd$mu
 	if (is.matrix(Q)) {
@@ -53,7 +47,7 @@ function(X,z,hd=NULL,...){
 	plot(V[,1],V[,2],col=z,pch=patch[z],...)
 	
 	#drawing the projective space (a line); matrix(10,p,1) is used only to have two points with the mean
-	proj <- matrix(,k,p)
+	proj <- matrix(NA,k,p)
 	for (i in 1:k) proj[i,] <- tcrossprod(Q[[i]])%*%matrix(10,p,1)+MU[i,]
 	
 	x <- proj%*%Z
@@ -70,12 +64,7 @@ function(X,z,hd=NULL,...){
 
 }
 
-
-
-##########
-
-demo_hddc_crabs <-
-function(DATA,k=4,model='AKBKQKD',threshold=0.2,method='C',algo='EM',itermax=50,eps=1e-2,init='kmeans',ZZ=NULL,min.individuals=2,noise.ctrl=1e-8,...){ 
+demo_hddc_crabs <- function(DATA,k=4,model='AKBKQKD',threshold=0.2,method='C',algo='EM',itermax=50,eps=1e-2,init='kmeans',ZZ=NULL,min.individuals=2,noise.ctrl=1e-8,...){ 
 	com_dim <- 1
 	Mod <- c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD")
 	p <- ncol(DATA)
@@ -151,12 +140,7 @@ function(DATA,k=4,model='AKBKQKD',threshold=0.2,method='C',algo='EM',itermax=50,
 	cat("Adjusted Rand Index:",ari,"\n")
 }
 
-
-
-##########
-
-hdda  <- 
-function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_dim=NULL,show=TRUE,scaling=FALSE,cv.dim=1:10,cv.threshold=c(.001,.005,.05,1:9*0.1),cv.vfold=10,LOO=FALSE,noise.ctrl=1e-8){
+hdda  <- function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_dim=NULL,show=TRUE,scaling=FALSE,cv.dim=1:10,cv.threshold=c(.001,.005,.05,1:9*0.1),cv.vfold=10,LOO=FALSE,noise.ctrl=1e-8){
 	Mod <- c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD","ALL")
 	Mod2 <- c("AKJBKQKDK","AKBKQKDK ","ABKQKDK  ","AKJBQKDK ","AKBQKDK  ","ABQKDK   ","AKJBKQKD ","AKBKQKD  ","ABKQKD   ","AKJBQKD  ","AKBQKD   ","ABQKD    ","AJBQD    ","ABQD     ")
 	
@@ -164,11 +148,11 @@ function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_di
 	else model <- toupper(model)
 	num <- which(model%in%as.character(1:14))
 	model[num] <- Mod[as.numeric(model[num])]
+	if (any(!model%in%Mod)) stop("Invalid model name\n",call.=FALSE)
 	mod_num <- c()
 	for(i in 1:length(model)) mod_num[i] <- which(model[i]==Mod)
 	mod_num <- sort(unique(mod_num))
 	model <- Mod[mod_num]
-	if (any(!model%in%Mod)) stop("Invalid model name\n",call.=FALSE)
 	
 	if(length(d)>1) stop("d cannot be a vector.\n",call.=FALSE)
 	if(!is.numeric(d)) d <- toupper(d)
@@ -402,10 +386,7 @@ function(data,cls,model='AkjBkQkDk',graph=FALSE,d="Cattell",threshold=0.2,com_di
 	}
 }
 
-##########
-
-hddc  <- 
-function(data,K=1:10,model=c("AkjBkQkDk"),threshold=0.2,com_dim=NULL,itermax=60,eps=1e-3,graph=FALSE,algo='EM',d="Cattell",init='kmeans',show=TRUE,mini.nb=c(5,10),scaling=FALSE,min.individuals=2,noise.ctrl=1e-8,...){
+hddc  <- function(data,K=1:10,model=c("AkjBkQkDk"),threshold=0.2,com_dim=NULL,itermax=60,eps=1e-3,graph=FALSE,algo='EM',d="Cattell",init='kmeans',show=TRUE,mini.nb=c(5,10),scaling=FALSE,min.individuals=2,noise.ctrl=1e-8,...){
 	Mod <- c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD")
 	Mod2 <- c("AKJBKQKDK","AKBKQKDK ","ABKQKDK  ","AKJBQKDK ","AKBQKDK  ","ABQKDK   ","AKJBKQKD ","AKBKQKD  ","ABKQKD   ","AKJBQKD  ","AKBQKD   ","ABQKD    ","AJBQD    ","ABQD     ")
 	Alg <- c('EM','CEM','SEM')
@@ -427,13 +408,13 @@ function(data,K=1:10,model=c("AkjBkQkDk"),threshold=0.2,com_dim=NULL,itermax=60,
 	else model <- toupper(model)
 	num <- which(model%in%as.character(1:14))
 	model[num] <- Mod[as.numeric(model[num])]
+	if (any(!model%in%Mod)) stop("Invalid model name\n")
 	mod_num <- c()
 	for(i in 1:length(model)) mod_num[i] <- which(model[i]==Mod)
 	mod_num <- sort(unique(mod_num))
 	model <- Mod[mod_num]
 	
 	if(is.integer(d)) stop("d must be equal to \"BIC\" or \"Cattell\"")
-	if (any(!model%in%Mod)) stop("Invalid model name\n")
 	if (any(model%in%Mod[7:14]) && is.numeric(d) && d>ncol(data)) stop("d must be strictly inferior to the dimension, \nwhich is in this case ",ncol(data),'\n')
 	if (!is.numeric(min.individuals) || min.individuals<2) stop("The minimum population control variable must be superior or equal to 2.\n")
 	if (length(init)==1 && !any(init==Init)) stop("Invalid initialization name\n")
@@ -501,12 +482,7 @@ function(data,K=1:10,model=c("AkjBkQkDk"),threshold=0.2,com_dim=NULL,itermax=60,
 	return(prms)
 }
 
-
-
-##########
-
-hdclassif_dim_choice <- 
-function(ev,n,method,threshold,graph,noise.ctrl){
+hdclassif_dim_choice <- function(ev,n,method,threshold,graph,noise.ctrl){
 	N <- sum(n)
 	prop <- n/N
 	K <- if(is.matrix(ev)) nrow(ev) else 1
@@ -605,10 +581,7 @@ function(ev,n,method,threshold,graph,noise.ctrl){
 	return(d)
 }
 
-##########
-
-hdclassif_bic  <- 
-function(par,p,data=NULL){
+hdclassif_bic  <- function(par,p,data=NULL){
 	model <- par$model
 	K <- par$K
 	d <- par$d
@@ -676,12 +649,7 @@ function(par,p,data=NULL){
 	return(-bic)
 }
 
-
-
-##########
-
-hdda_prms  <- 
-function(data,cls,model,threshold,method,kname,noise.ctrl,com_dim=NULL){
+hdda_prms  <- function(data,cls,model,threshold,method,kname,noise.ctrl,com_dim=NULL){
 	p <- ncol(data)
 	N <- nrow(data)
 	K <- max(cls)
@@ -816,12 +784,7 @@ function(data,cls,model,threshold,method,kname,noise.ctrl,com_dim=NULL){
 	list(model=model,K=K,d=d,a=ai,b=bi,mu=mu,prop=prop,ev=ev,Q=Q,kname=kname,info=info,N=N,com_ev=com_ev)
 }
 
-
-
-##########
-
-hdda_prms_bis  <- 
-function(model,par,p){
+hdda_prms_bis  <- function(model,par,p){
 	N <- par$N
 	K <- par$K
 	ev <- par$ev
@@ -872,10 +835,7 @@ function(model,par,p){
 	list(model=model,K=K,d=d,a=ai,b=bi,mu=par$mu,prop=par$prop,ev=ev,Q=par$Q,kname=par$kname,info=par$info,N=N,com_ev=par$com_ev)
 }
 
-##########
-
-hddc_main <-
-function(DATA,K,model,threshold,method,algo,itermax,eps,init,mini.nb,min.individuals,noise.ctrl,com_dim=NULL,...){ 
+hddc_main <- function(DATA,K,model,threshold,method,algo,itermax,eps,init,mini.nb,min.individuals,noise.ctrl,com_dim=NULL,...){ 
 	Mod <- c("AKJBKQKDK","AKBKQKDK","ABKQKDK","AKJBQKDK","AKBQKDK","ABQKDK","AKJBKQKD","AKBKQKD","ABKQKD","AKJBQKD","AKBQKD","ABQKD","AJBQD","ABQD")
 	p <- ncol(DATA)
 	N <- nrow(DATA)
@@ -995,12 +955,7 @@ function(DATA,K,model,threshold,method,algo,itermax,eps,init,mini.nb,min.individ
 	list(model=model,K=K,d=d,a=a,b=b,mu=mu,prop=prop,ev=m$ev,Q=m$Q,loglik=likely,posterior=t,class=cls,com_ev=com_ev,N=N)
 }
 
-
-
-##########
-
-hddc_e_step  <- 
-function(x,par){
+hddc_e_step  <- function(x,par){
 	p <- ncol(x)
 	N <- nrow(x)
 	K <- par$K
@@ -1038,12 +993,7 @@ function(x,par){
 	list(t=t,L=L)
 }
 
-
-
-##########
-
-hddc_m_step  <- 
-function(x,K,t,model,threshold,method,noise.ctrl,com_dim){
+hddc_m_step  <- function(x,K,t,model,threshold,method,noise.ctrl,com_dim){
 	N <- nrow(x)
 	p <- ncol(x)
 	prop <- c()
@@ -1159,12 +1109,7 @@ function(x,K,t,model,threshold,method,noise.ctrl,com_dim){
 	list(model=model,K=K,d=d,a=ai,b=bi,mu=mu,prop=prop,ev=ev,Q=Q)
 }
 
-
-
-##########
-
-plot.hdc  <- 
-function(x,method=NULL,threshold=NULL,noise.ctrl=1e-8,...){
+plot.hdc  <- function(x,method=NULL,threshold=NULL,noise.ctrl=1e-8,...){
 	method <- if(!is.null(method)) method else if(!is.null(x$threshold)) "C" else "B"
 	method <- toupper(method)
 	method <- if (method%in%c("CATTELL","C")) "C" else if (method%in%c("BIC","B")) "B" 
@@ -1180,12 +1125,7 @@ function(x,method=NULL,threshold=NULL,noise.ctrl=1e-8,...){
 	else d <- hdclassif_dim_choice(x$com_ev,n,method,threshold,TRUE,noise.ctrl)
 }
 
-
-
-##########
-
-predict.hdc  <- 
-function(object,data,cls=NULL,...){
+predict.hdc  <- function(object,data,cls=NULL,...){
 	#Extract variables:
 	p <- ncol(data)
 	N <- nrow(data)
@@ -1258,23 +1198,13 @@ function(object,data,cls=NULL,...){
 	list(class=result,posterior=t,confusion=confusion,ARI=ARI)
 }
 
-
-
-##########
-
-print.hd <-
-function(x,...){
+print.hd <- function(x,...){
 	class(x) <- NULL
 	print.default(x,digits=3,na.print='.')
 	class(x) <- 'hd'
 }
 
-
-
-##########
-
-print.hdc <-
-function(x,...){
+print.hdc <- function(x,...){
 	if(length(x$kname)!=0) cat ("HIGH DIMENSIONAL DISCRIMINANT ANALYSIS\nMODEL: ",x$model,"\n",sep='')
 	else cat ("HIGH DIMENSIONAL DATA CLUSTERING\nMODEL: ",x$model,"\n",sep='')
 	print(x$prop)
@@ -1287,12 +1217,7 @@ function(x,...){
 	if(min(x$b)<10e-6) cat("Information: b < 10e-6\n")
 }
 
-
-
-##########
-
-simuldata <-
-function(nlearn,ntest,p,K=3,prop=NULL,d=NULL,a=NULL,b=NULL){
+simuldata <- function(nlearn,ntest,p,K=3,prop=NULL,d=NULL,a=NULL,b=NULL){
 	N=nlearn+ntest
 	if (length(prop)==0) prop<-rep(1/K,K)
 	else if (length(prop)!=K) stop("Proportions don't fit with the number of classes.")
@@ -1335,10 +1260,6 @@ function(nlearn,ntest,p,K=3,prop=NULL,d=NULL,a=NULL,b=NULL){
 	data <- list(X=X[ind[1:nlearn],],clx=cls[ind[1:nlearn]],Y=X[ind[(nlearn+1):N],],cly=cls[ind[(nlearn+1):N]],prms=prms)
 	
 }
-
-
-
-##########
 
 hddc_ari <- function(x,y){
 	#This function is drawn from the mclust package

@@ -1,7 +1,8 @@
-bc55f94072bc9d6f2a8398fa525897d7 *ChangeLog
-b74ef5e03a9f96920ea7ac4a9846f3e5 *DESCRIPTION
-d6ea2aca75a2985eeaea48d247f47d8d *NAMESPACE
-c026b550868d7a1d2768ae08a03a83fd *R/hdclassif.R
+3f59fa16126ecc0b064319c7edb49e67 *ChangeLog
+4811c2bf206b10d91ce7b5f32d0f609c *DESCRIPTION
+8d6305986545837a9bd2c10d4e07f046 *NAMESPACE
+6699522417c62ddce3812ca36efacecd *R/hdclassif.R
+bb2c0aba59b8a00554c8110681676572 *R/mdaHD.R
 c6f12c19faff9c2f80afe55639b3d4a3 *data/Crabs.rda
 ffb2a0e027b07b73f6feb3752c468e7e *data/wine.rda
 3c3e15c7421bd085435d6a0bc4569d31 *demo/00Index
@@ -13,8 +14,10 @@ ceb97ac653cd5e934ecefaa4c4437172 *demo/hddc.r
 f3877309854e3ef8a6157b15fa3be974 *man/HDclassif-package.Rd
 1bc3f0aebc9b4b3cf5d73a081e1af762 *man/demo_hddc.Rd
 0ce1a0dafd91cfff512d50253d625f1b *man/hdda.Rd
-f13dda28edf6cc19ea418c97ee82ae02 *man/hddc.Rd
+b7bfada4d4b39858925b293814abcb0f *man/hddc.Rd
+92eb11cf2b4cbbf530af1016ee9b7418 *man/hdmda.Rd
 a7472394b387638e99a2974805b01280 *man/plot.hdc.Rd
-4ef8573499154a109dfeda129d8eda52 *man/predict.hdc.Rd
+662147864c42150fc658b2a63c9a5fc7 *man/predict.hdc.Rd
+4082abb000a91d12aafdbbd206b9edd2 *man/predict.hdmda.Rd
 47286d48377f9d88d590e3b69e6a56a2 *man/simuldata.Rd
 b2bf685ffe076ab33170d607582e83ef *man/wine.Rd

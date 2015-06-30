@@ -1,6 +1,16 @@
-HDclassif version 1.2.2 2015-02-14:
+
+HDclassif version 1.3 2015-06-30:
+
+	- the hdmda method for classification is added (supervised classification by using HDDC within the classes)
+	- slight improvement of error handling
+	- slight changes in the help files
+
+
+HDclassif version 1.2.3 2015-02-14:
+
 - The ARI criterion is introduced in the function predict for hddc objects. It is a criterion to assess the goodness of fit of the clustering. ARI completely replaces the former "best classication rate", as the algorithm used to compute it was flawed.
 - The readability of help files is improved.
+
 
 HDclassif version 1.2.2 2013-01-15:
 
@@ -8,7 +18,7 @@ Help files:
 - imoprtant in hddc.Rd: mismatch between the code and the help files; the stopping criterion (eps) now is correctly described as 'the difference between two successive log likelihoods' (as it is in the code) instead of 'the difference between two successive log likelihood per observation'
 - some rewritting of help files
 Code issues:
-- now some errors are handled properly by the function hddc
+- now some errors are now handled properly by the function hddc
 - corrected a bug when using common dimension models which could lead to a selection of the intrinsic dimension of 0
 - now hddc will stop if the number of potential individuals in a class is inferior to 2; if so it will give the message 'empty class' which means stricly less than 2 individuals
 - in hddc and hdda the option 'dim.ctrl' is now named 'noise.ctrl' for a clearer meaning

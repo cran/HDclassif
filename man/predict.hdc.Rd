@@ -1,7 +1,7 @@
 \name{predict.hdc}
 \alias{predict.hdc}
 \title{
-Prediction method for 'hdc' class objects.
+Prediction method for \sQuote{hdc} class objects.
 }
 \description{
 This function computes the class prediction of a dataset with respect to the model-based supervised and unsupervised classification methods \code{\link{hdda}} and \code{\link{hddc}}.
@@ -21,7 +21,7 @@ A matrix or a data frame of observations, assuming the rows are the observations
 It is optional and used to be compared to the predicted classes, default is NULL.
 }
 \item{\dots}{
-Arguments based from or to other methods.
+Arguments based from or to other methods. Not currently used.
 }
 }
 \value{

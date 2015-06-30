@@ -154,6 +154,8 @@ The different initializations are:
 	\item{A prior class vector:}{It can also be directly initialized with a vector containing the prior classes of the observations}
 }
 
+The BIC criterion used in this function is to be maximized and is defined as 2*LL-k*log(n) where LL is the log-likelihood, k is the number of parameters and n is the number of observations.
+
 }
 
 
