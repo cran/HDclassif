@@ -10,7 +10,7 @@ prms <- hddc(A,4)
 res <- predict(prms,A,cls)
 
 #selection of the number of clusters
-prms <- hddc(A,graph=TRUE)
+prms <- hddc(A)
 res<-predict(prms,A,cls)
 
 #Now a PCA on the "Crabs" dataset is done on the two first 

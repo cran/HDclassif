@@ -16,7 +16,7 @@ hdmda(X,cls,K=1:10,model='AkjBkQkDk',show=FALSE,...)
 \value{
 \code{hdmda} returns an 'hdmda' object which is a list containing:
 \item{alpha}{Estimated prior probabilities for the classes.}
-\item{prms}{Estimated mixture parameteres for each class.}
+\item{prms}{Estimated mixture parameters for each class.}
 \item{kname}{The name (level) of each class.}
 }
 \references{

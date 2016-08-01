@@ -54,7 +54,7 @@ data(wine)
 a <- wine[,-1]
 z <- wine[,1]
 
-prms1 <- hdda(a, z, model="AkBkQkDk", scaling=TRUE, d="B")
+prms1 <- hdda(a, z, model="AkBkQkDk", scaling=TRUE, d_select="bic")
 
 #the plot related to the selection that has been done: BIC
 plot(prms1)     
@@ -63,7 +63,7 @@ plot(prms1)
 plot(prms1,"Cattell",0.3)                         
 
 
-prms2 <- hdda(a, z, model="AkBkQkD", scaling=TRUE, d="c")
+prms2 <- hdda(a, z, model="AkBkQkD", scaling=TRUE, d_select="cattell")
 #the plot related to the selection that has been done: Cattell's scree-test
 plot(prms2) 
 #the plot of the BIC

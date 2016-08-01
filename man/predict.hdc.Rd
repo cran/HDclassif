@@ -58,7 +58,8 @@ prms1 <- hddc(X, K=3, algo="CEM", init='param')
 #class vector obtained by the clustering:
 prms1$class                   
 
-#only to see the good classification rate and the confusion matrix:                     
+# only to see the good classification rate and 
+# the Adjusted Rand Index:                     
 res1 <- predict(prms1, X, clx)                                            
 res2 <- predict(prms1, Y)       
 
@@ -71,9 +72,6 @@ data(Crabs)
 #clustering of the Crabs dataset:
 prms3 <- hddc(Crabs[,-1], K=4, algo="EM", init='kmeans')        
 res3 <- predict(prms3, Crabs[,-1], Crabs[,1])
-
-#the confusion matrix:
-res3$confusion
 
 }
 \keyword{ hddc }
