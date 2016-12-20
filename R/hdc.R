@@ -24,7 +24,7 @@ hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 					sub1 <- paste("Class #", i, ",  d", i, "=", d[i], sep="")
 					Nmax <- max(which(ev[i, ]>noise.ctrl))-1
 					plot(dev[1:(min(d[i]+5, Nmax)), i], type="l", col="blue", main=paste("Cattell's Scree-Test\n", sub1, sep=""), ylab=paste("threshold =", threshold), xlab="Dimension", ylim=c(0, 1.05))
-					abline(h=threshold, lty=3)  	
+					abline(h=threshold, lty=3) 	
 					points(d[i], dev[d[i], i], col='red')
 				}
 				par(op)
@@ -108,7 +108,7 @@ hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 	return(d)
 }
 
-hdclassif_bic  <- function(par, p, data=NULL){
+hdclassif_bic <- function(par, p, data=NULL){
 	model <- par$model
 	K <- par$K
 	d <- par$d
@@ -121,36 +121,34 @@ hdclassif_bic  <- function(par, p, data=NULL){
 	if(length(b)==1){
 		#update of b to set it as variable dimension models
 		eps <- sum(prop*d)
-		n_max <- if(model%in%c("ABQD","AJBQD")) length(par$ev) else ncol(par$ev)
+		n_max <- if(model%in%c("ABQD", "AJBQD")) length(par$ev) else ncol(par$ev)
 		b <- b*(n_max-eps)/(p-eps)
-		b <- rep(b,length=K)
+		b <- rep(b, length=K)
 	}	
-	if (length(a)==1) a <- matrix(a,K,max(d))
-	else if (length(a)==K) a <- matrix(a,K,max(d))
-	else if (model=='AJBQD') a <- matrix(a,K,d[1],byrow=TRUE)
+	if (length(a)==1) a <- matrix(a, K, max(d))
+	else if (length(a)==K) a <- matrix(a, K, max(d))
+	else if (model=='AJBQD') a <- matrix(a, K, d[1], byrow=TRUE)
 	
-	if(min(a,na.rm=TRUE)<=0 | any(b<0)) return(-Inf)
+	if(min(a, na.rm=TRUE)<=0 | any(b<0)) return(-Inf)
 	
 	if (is.null(par$loglik)){
 		som_a <- c()
-		for (i in 1:K) som_a[i] <- sum(log(a[i,1:d[i]]))
-		L <-  -1/2*sum(prop * (som_a + (p-d)*log(b) - 2*log(prop) + p*(1+log(2*pi))))*N
-	}
-	else if (model%in%c("ABQD","AJBQD")){
-		Q <- rep(list(par$Q),K)
-		K_pen <- matrix(0,K,N)
+		for (i in 1:K) som_a[i] <- sum(log(a[i, 1:d[i]]))
+		L <- -1/2*sum(prop * (som_a + (p-d)*log(b) - 2*log(prop) + p*(1+log(2*pi))))*N
+	} else if (model%in%c("ABQD", "AJBQD")){
+		Q <- rep(list(par$Q), K)
+		K_pen <- matrix(0, K, N)
 		for (i in 1:K) {
-			s <- sum(log(a[i,1:d[i]]))
-			X <- data-matrix(mu[i,],N,p,byrow=TRUE)
+			s <- sum(log(a[i, 1:d[i]]))
+			X <- data-matrix(mu[i, ], N, p, byrow=TRUE)
 			proj <- (X%*%Q[[i]])%*%t(Q[[i]])
-			A <- (-proj)%*%Q[[i]]%*%sqrt(diag(1/a[i,1:d[i]],d[i]))
+			A <- (-proj)%*%Q[[i]]%*%sqrt(diag(1/a[i, 1:d[i]], d[i]))
 			B <- X-proj
-			K_pen[i,] <- rowSums(A^2)+1/b[i]*rowSums(B^2)+s+(p-d[i])*log(b[i])-2*log(prop[i])+p*log(2*pi)
+			K_pen[i, ] <- rowSums(A^2)+1/b[i]*rowSums(B^2)+s+(p-d[i])*log(b[i])-2*log(prop[i])+p*log(2*pi)
 		}
 		A <- -1/2*t(K_pen)
-		L <- sum(log(rowSums(exp(A-apply(A,1,max))))+apply(A,1,max))
-	}
-	else L <- par$loglik[length(par$loglik)]
+		L <- sum(log(rowSums(exp(A-apply(A, 1, max))))+apply(A, 1, max))
+	} else L <- par$loglik[length(par$loglik)]
 	
 	
 	ro <- K*p+K-1
@@ -179,7 +177,7 @@ hdclassif_bic  <- function(par, p, data=NULL){
 	if(!is.null(t)){
 		# means we are in HDDC
 		Z = ((t - apply(t, 1, max))==0) + 0
-		icl =  - (- bic - 2*sum(Z*log(t+1e-15)))
+		icl = - (- bic - 2*sum(Z*log(t+1e-15)))
 	} else {
 		# Si HDDA, entropie est nulle => car classes pures
 		icl = bic
@@ -188,9 +186,9 @@ hdclassif_bic  <- function(par, p, data=NULL){
 	return(list(bic = bic, icl = icl))
 }
 
-simuldata <- function(nlearn,ntest,p,K=3,prop=NULL,d=NULL,a=NULL,b=NULL){
+simuldata <- function(nlearn, ntest, p, K=3, prop=NULL, d=NULL, a=NULL, b=NULL){
 	N=nlearn+ntest
-	if (length(prop)==0) prop<-rep(1/K,K)
+	if (length(prop)==0) prop<-rep(1/K, K)
 	else if (length(prop)!=K) stop("Proportions don't fit with the number of classes.")
 	else prop<-prop/sum(prop)
 	
@@ -199,32 +197,32 @@ simuldata <- function(nlearn,ntest,p,K=3,prop=NULL,d=NULL,a=NULL,b=NULL){
 	N<-sum(n)
 	
 	#MEANS
-	mu<-matrix(0,K,p)
-	j<-sample(p,K)
-	mu[cbind(1:K,j)]<-10
+	mu<-matrix(0, K, p)
+	j<-sample(p, K)
+	mu[cbind(1:K, j)]<-10
 	
 	# Intrinsic dimensions
-	if ( length(d)==0 )	d<-sort(ceiling(runif(K,0,12*(p>20)+5*(p<=20 && p>=6)+(p<6)*(p-1))),decreasing=TRUE)
+	if ( length(d)==0 )	d<-sort(ceiling(runif(K, 0, 12*(p>20)+5*(p<=20 && p>=6)+(p<6)*(p-1))), decreasing=TRUE)
 	else if ( length(d)!=K || !any(is.numeric(d)) ) stop("Wrong value of d.")
 	
 	# Orientation matrices
-	Q<-vector(mode='list',length=K)
-	for (i in 1:K) Q[[i]]<-qr.Q(qr(mvrnorm(p,mu=rep(0,p),Sigma=diag(1,p))))
+	Q<-vector(mode='list', length=K)
+	for (i in 1:K) Q[[i]]<-qr.Q(qr(mvrnorm(p, mu=rep(0, p), Sigma=diag(1, p))))
 	
 	# Variance in the class-specific subspace
-	if ( length(a)==0 ) a<-sort(ceiling(runif(K,30,350)))
+	if ( length(a)==0 ) a<-sort(ceiling(runif(K, 30, 350)))
 	else if ( length(a)!=K || !any(is.numeric(a)) ) stop("Wrong value of a.")
-	if ( length(b)==0 )b<-sort(ceiling(runif(K,0,25)))
+	if ( length(b)==0 )b<-sort(ceiling(runif(K, 0, 25)))
 	else if ( length(b)!=K || !any(is.numeric(b)) ) stop("Wrong value of b.")
 	
 	# Simulation
-	S<-vector(mode='list',length=K)
-	for (i in 1:K)	S[[i]]<-crossprod(Q[[i]]%*%sqrt(diag(c(rep(a[i],d[i]),rep(b[i],p-d[i])))))
+	S<-vector(mode='list', length=K)
+	for (i in 1:K)	S[[i]]<-crossprod(Q[[i]]%*%sqrt(diag(c(rep(a[i], d[i]), rep(b[i], p-d[i])))))
 	
 	cls<-X<-NULL
-	for (i in 1:K)	X<-rbind(X,mvrnorm(n[i],mu=mu[i,],Sigma=S[[i]]))
+	for (i in 1:K)	X<-rbind(X, mvrnorm(n[i], mu=mu[i, ], Sigma=S[[i]]))
 	
-	for (i in 1:K) cls<-c(cls,rep(i,n[i]))
+	for (i in 1:K) cls<-c(cls, rep(i, n[i]))
 	
 	ind<-sample(1:N, N)
 	prms<-list(a=a, b=b, prop=prop, d=d, mu=mu)
@@ -323,7 +321,7 @@ hdc_myEigen = function(x, k, only.values=FALSE){
 ####
 
 
-addCommas = function(x) sapply(x,addCommas_single)
+addCommas = function(x) sapply(x, addCommas_single)
 
 addCommas_single = function(x){
 	# Cette fonction ajoute des virgules pour plus de
@@ -335,20 +333,21 @@ addCommas_single = function(x){
 	x = abs(x)
 	
 	decimal = x - floor(x)
-	if(decimal>0) dec_string = substr(decimal,2,4)
+	if(decimal>0) dec_string = substr(decimal, 2, 4)
 	else dec_string = ""
 	
 	entier = as.character(floor(x))
 	
-	quoi = rev(strsplit(entier,"")[[1]])
+	quoi = rev(strsplit(entier, "")[[1]])
 	n = length(quoi)
 	sol = c()
 	for(i in 1:n){
-		sol = c(sol,quoi[i])
-		if(i%%3 == 0 && i!=n) sol = c(sol,",")
+		sol = c(sol, quoi[i])
+		if(i%%3 == 0 && i!=n) sol = c(sol, ",")
 	}
 	
-	res = paste0(ifelse(s==-1,"-",""),paste0(rev(sol),collapse=""),dec_string)
+	res = paste0(ifelse(s==-1, "-", ""), paste0(rev(sol), collapse=""), dec_string)
+	res
 }
 
 ####
@@ -356,7 +355,7 @@ addCommas_single = function(x){
 ####
 
 
-plot.hdc  <- function(x, method=NULL, threshold=NULL, noise.ctrl=1e-8, ...){
+plot.hdc <- function(x, method=NULL, threshold=NULL, noise.ctrl=1e-8, ...){
 	
 	if(!is.null(method)){
 		method = myAlerts(method, "method", "singleCharacterMatch.arg", "HDDC: ", c("cattell", "bic"))
@@ -368,17 +367,17 @@ plot.hdc  <- function(x, method=NULL, threshold=NULL, noise.ctrl=1e-8, ...){
 		}
 	}
 	
-	threshold <- if(!is.null(threshold)) threshold else if(!is.null(x$threshold)) x$threshold else  0.2
+	threshold <- if(!is.null(threshold)) threshold else if(!is.null(x$threshold)) x$threshold else 0.2
 	
 	k <- x$K
 	N <- x$N
 	n <- x$prop*N
 	
-	if(is.null(x$com_ev)) d <- hdclassif_dim_choice(x$ev,n,method,threshold,TRUE,noise.ctrl)
-	else d <- hdclassif_dim_choice(x$com_ev,n,method,threshold,TRUE,noise.ctrl)
+	if(is.null(x$com_ev)) d <- hdclassif_dim_choice(x$ev, n, method, threshold, TRUE, noise.ctrl)
+	else d <- hdclassif_dim_choice(x$com_ev, n, method, threshold, TRUE, noise.ctrl)
 }
 
-predict.hdc  <- function(object,data,cls=NULL,...){
+predict.hdc <- function(object, data, cls=NULL, ...){
 	#Extract variables:
 	p <- ncol(data)
 	N <- nrow(data)
@@ -396,85 +395,85 @@ predict.hdc  <- function(object,data,cls=NULL,...){
 	if (length(N)==0) {
 		N <- 1
 		p <- length(data)
-		x <- matrix(data,N,p)
+		x <- matrix(data, N, p)
 	}
 	
 	if (length(object$scaling)!=0){
-		x <- scale(x,center=object$scaling$mu,scale=object$scaling$sd)
+		x <- scale(x, center=object$scaling$mu, scale=object$scaling$sd)
 	}
 	
-	if(length(b)==1) b <- rep(b,length=K)
-	if (length(a)==1) a <- matrix(a,K,max(d))
-	else if (length(a)==K) a <- matrix(a,K,max(d))
-	else if (object$model=='AJBQD') a <- matrix(a,K,d[1],byrow=TRUE)
+	if(length(b)==1) b <- rep(b, length=K)
+	if (length(a)==1) a <- matrix(a, K, max(d))
+	else if (length(a)==K) a <- matrix(a, K, max(d))
+	else if (object$model=='AJBQD') a <- matrix(a, K, d[1], byrow=TRUE)
 	
-	if(min(a,na.rm=TRUE)<=0 | min(b)<=0) stop("Some parameters A or B are negative. Prediction can't be done.\nThe reduction of the intrinsic dimensions or a more constrained model can be a solution.\nAlso, you can change the value of A's and B's manually by accessing the paramaters (though not recommended).\n",call.=FALSE)
+	if(min(a, na.rm=TRUE)<=0 | min(b)<=0) stop("Some parameters A or B are negative. Prediction can't be done.\nThe reduction of the intrinsic dimensions or a more constrained model can be a solution.\nAlso, you can change the value of A's and B's manually by accessing the paramaters (though not recommended).\n", call.=FALSE)
 	
 	
 	if(object$model=="AJBQD") {
-		K_pen <- diag((mu%*%Q%*%diag(1/a[1,1:d[1]],d[1]))%*%(t(Q)%*%t(mu)))-2*(mu%*%Q%*%diag(1/a[1,1:d[1]],d[1]))%*%(t(Q)%*%t(x))+1/b[1]*(diag(tcrossprod(mu))-2*mu%*%t(x)+2*(mu%*%Q)%*%(t(Q)%*%t(x))-diag(tcrossprod(mu%*%Q)))-2*log(c(prop))
+		K_pen <- diag((mu%*%Q%*%diag(1/a[1, 1:d[1]], d[1]))%*%(t(Q)%*%t(mu)))-2*(mu%*%Q%*%diag(1/a[1, 1:d[1]], d[1]))%*%(t(Q)%*%t(x))+1/b[1]*(diag(tcrossprod(mu))-2*mu%*%t(x)+2*(mu%*%Q)%*%(t(Q)%*%t(x))-diag(tcrossprod(mu%*%Q)))-2*log(c(prop))
 	} else if (object$model=="ABQD") {
 		K_pen <- diag(1/a[1]*(mu%*%Q)%*%(t(Q)%*%t(mu)))+1/b[1]*(diag(tcrossprod(mu))-2*mu%*%t(x)-diag(tcrossprod(mu%*%Q)))-2*log(c(prop))+2*(1/b[1]-1/a[1])*(mu%*%Q)%*%(t(Q)%*%t(x))
 	} else {
-		K_pen <- matrix(0,K,N)
+		K_pen <- matrix(0, K, N)
 		for (i in 1:K) {
-			s <- sum(log(a[i,1:d[i]]))
-			X <- x-matrix(mu[i,],N,p,byrow=TRUE)
+			s <- sum(log(a[i, 1:d[i]]))
+			X <- x-matrix(mu[i, ], N, p, byrow=TRUE)
 			proj <- (X%*%Q[[i]])%*%t(Q[[i]])
-			A <- (-proj)%*%Q[[i]]%*%sqrt(diag(1/a[i,1:d[i]],d[i]))
+			A <- (-proj)%*%Q[[i]]%*%sqrt(diag(1/a[i, 1:d[i]], d[i]))
 			B <- X-proj
-			K_pen[i,] <- rowSums(A^2)+1/b[i]*rowSums(B^2)+s+(p-d[i])*log(b[i])-2*log(prop[i])
+			K_pen[i, ] <- rowSums(A^2)+1/b[i]*rowSums(B^2)+s+(p-d[i])*log(b[i])-2*log(prop[i])
 		}
 	}
 	
-	t <- matrix(0,N,K,dimnames=list(1:N,1:K))
-	for (i in 1:K) t[,i] <- 1/rowSums(exp((K_pen[i,]-t(K_pen))/2))
+	t <- matrix(0, N, K, dimnames=list(1:N, 1:K))
+	for (i in 1:K) t[, i] <- 1/rowSums(exp((K_pen[i, ]-t(K_pen))/2))
 	result <- max.col(t)
 	
 	if (!is.null(object$kname)){
-		result <- factor(result,labels=object$kname,levels=seq_along(object$kname))
+		result <- factor(result, labels=object$kname, levels=seq_along(object$kname))
 		colnames(t) <- object$kname
 	}
 	if (!is.null(cls)){
 		if(is.null(object$kname)){
-			ARI <- hddc_ari(cls,result)
-			cat("Adjusted Rand Index: ",ARI,".\n",sep="")
+			ARI <- hddc_ari(cls, result)
+			cat("Adjusted Rand Index: ", ARI, ".\n", sep="")
 		}
 		else{
-			confusion <- table(result,cls)
-			dimnames(confusion) <- list('Predicted class'=object$kname,'Initial class'=object$kname)
-			cat("Correct classification rate: ",sum(diag(confusion))/N,".\n",sep="")
+			confusion <- table(result, cls)
+			dimnames(confusion) <- list('Predicted class'=object$kname, 'Initial class'=object$kname)
+			cat("Correct classification rate: ", sum(diag(confusion))/N, ".\n", sep="")
 			print(confusion)
 		}
 	}
 	class(t) <- 'hd'
-	list(class=result,posterior=t,confusion=confusion,ARI=ARI)
+	list(class=result, posterior=t, confusion=confusion, ARI=ARI)
 }
 
-print.hd <- function(x,...){
+print.hd <- function(x, ...){
 	class(x) <- NULL
-	print.default(x,digits=3,na.print='.')
+	print.default(x, digits=3, na.print='.')
 	class(x) <- 'hd'
 }
 
-print.hdc <- function(x,...){
-	if(length(x$kname)!=0) cat ("HIGH DIMENSIONAL DISCRIMINANT ANALYSIS\nMODEL: ",x$model,"\n",sep='')
-	else cat ("HIGH DIMENSIONAL DATA CLUSTERING\nMODEL: ",x$model,"\n",sep='')
+print.hdc <- function(x, ...){
+	if(length(x$kname)!=0) cat ("HIGH DIMENSIONAL DISCRIMINANT ANALYSIS\nMODEL: ", x$model, "\n", sep='')
+	else cat ("HIGH DIMENSIONAL DATA CLUSTERING\nMODEL: ", x$model, "\n", sep='')
 	print(x$prop)
 	print(x$d)
 	print(x$a)
 	print(x$b)
-	cat("BIC: ",x$BIC,"\n")
-	if(!is.null(x$info)) cat(x$info,"\n")
-	if(min(x$a,na.rm=TRUE)<0) cat("Information: a < 0\n")
+	cat("BIC: ", x$BIC, "\n")
+	if(!is.null(x$info)) cat(x$info, "\n")
+	if(min(x$a, na.rm=TRUE)<0) cat("Information: a < 0\n")
 	if(min(x$b)<10e-6) cat("Information: b < 10e-6\n")
 }
 
 
 # "[[.hddc_all_results" <- function(x, y){
 # 	# input:
-# 	#   - x: a hddc_all_results element
-# 	#   - y: an index: either a positive integer, or a character
+# 	#  - x: a hddc_all_results element
+# 	#  - y: an index: either a positive integer, or a character
 # 	
 # 	print(y)
 # 	
@@ -521,8 +520,8 @@ print.hdc <- function(x,...){
 # 
 # "[.hddc_all_results" <- function(x, y){
 # 	# input:
-# 	#   - x: a hddc_all_results element
-# 	#   - y: a vector of indices: either a positive integer, or a character
+# 	#  - x: a hddc_all_results element
+# 	#  - y: a vector of indices: either a positive integer, or a character
 # 	
 # 	print(y)
 # 	
@@ -539,7 +538,7 @@ print.hdc <- function(x,...){
 # 		
 # 		if(length(y_clean)!=length(y)){
 # 			qui = setdiff(y, y_clean)
-# 			warning("Some models extracted with [ were discarded (e.g. ",qui[1],").")
+# 			warning("Some models extracted with [ were discarded (e.g. ", qui[1], ").")
 # 		}
 # 	} else {
 # 		y_clean = intersect(y, 1:(n-1))
@@ -550,8 +549,8 @@ print.hdc <- function(x,...){
 # 		}
 # 		
 # 		if(length(y_clean)!=length(y)){
-# 			qui = setdiff(y,y_clean)
-# 			warning("Some models extracted with [ were discarded (e.g. ",qui[1],").")
+# 			qui = setdiff(y, y_clean)
+# 			warning("Some models extracted with [ were discarded (e.g. ", qui[1], ").")
 # 		}
 # 	}
 # 	

@@ -18,7 +18,7 @@ hdda(data, cls, model = "AkjBkQkDk", graph = FALSE, d_select = "Cattell",
 
 \item{graph}{It is for comparison sake only, when several estimations are run at the same time (either when using several models, or when using cross-validation to select the best dimension/threshold). If graph = TRUE, the plot of the results of all estimations is displayed. Default is FALSE.}
 
-\item{d_select}{Either \dQuote{Cattell} (default) or \dQuote{BIC}. See details for more information. This parameter selects which method to use to select the intrinsic dimensions.}
+\item{d_select}{Either \dQuote{Cattell} (default), \dQuote{BIC} or \dQuote{CV}. See details for more information. This parameter selects which method to use to select the intrinsic dimensions.}
 
 \item{threshold}{A float stricly within 0 and 1. It is the threshold used in the Cattell's Scree-Test.}
 
@@ -28,13 +28,13 @@ hdda(data, cls, model = "AkjBkQkDk", graph = FALSE, d_select = "Cattell",
 
 \item{scaling}{Logical: whether to scale the dataset (mean=0 and standard-error=1 for each variable) or not. By default the data is not scaled.}
 
-\item{cv.dim}{A vector of integers. Only when d=\dQuote{CV}. Gives the dimensions for which the CV is to be done. Note that if some dimensions are greater than what it is possible to have, those are taken off.}
+\item{cv.dim}{A vector of integers. Only when d_select=\dQuote{CV}. Gives the dimensions for which the CV is to be done. Note that if some dimensions are greater than what it is possible to have, those are taken off.}
 
-\item{cv.threshold}{A vector of floats strictly within 0 and 1. Only when d=\dQuote{CV}. Gives the thresholds for which the CV is to be done.}
+\item{cv.threshold}{A vector of floats strictly within 0 and 1. Only when d_select=\dQuote{CV}. Gives the thresholds for which the CV is to be done.}
 
-\item{cv.vfold}{An integer. Only when d=\dQuote{CV}. It gives the number of different subsamples in which the dataset is split. If \dQuote{cv.vfold} is greater than the number of observations, then the program equalize them.}
+\item{cv.vfold}{An integer. Only when d_select=\dQuote{CV}. It gives the number of different subsamples in which the dataset is split. If \dQuote{cv.vfold} is greater than the number of observations, then the program equalize them.}
 
-\item{LOO}{If TRUE, it returns results (classes and posterior probabilities) for leave-one-out cross-validation.}
+\item{LOO}{If TRUE, it returns the results (classes and posterior probabilities) for leave-one-out cross-validation.}
 
 \item{noise.ctrl}{This parameter avoids to have a too low value of the 'noise' parameter b. It garantees that the dimension selection process do not select too many dimensions (which leads to a potential too low value of the noise parameter b). When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to noise.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.}
 

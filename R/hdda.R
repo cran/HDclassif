@@ -8,11 +8,12 @@
 #'
 #' @inheritParams hddc
 #' @param cls The vector of the class of each observations, its type can be numeric or string.
+#' @param d_select Either \dQuote{Cattell} (default), \dQuote{BIC} or \dQuote{CV}. See details for more information. This parameter selects which method to use to select the intrinsic dimensions.
 #' @param graph It is for comparison sake only, when several estimations are run at the same time (either when using several models, or when using cross-validation to select the best dimension/threshold). If graph = TRUE, the plot of the results of all estimations is displayed. Default is FALSE.
-#' @param cv.dim A vector of integers. Only when d=\dQuote{CV}. Gives the dimensions for which the CV is to be done. Note that if some dimensions are greater than what it is possible to have, those are taken off.
-#' @param cv.threshold A vector of floats strictly within 0 and 1. Only when d=\dQuote{CV}. Gives the thresholds for which the CV is to be done.
-#' @param cv.vfold An integer. Only when d=\dQuote{CV}. It gives the number of different subsamples in which the dataset is split. If \dQuote{cv.vfold} is greater than the number of observations, then the program equalize them.
-#' @param LOO If TRUE, it returns results (classes and posterior probabilities) for leave-one-out cross-validation.
+#' @param cv.dim A vector of integers. Only when d_select=\dQuote{CV}. Gives the dimensions for which the CV is to be done. Note that if some dimensions are greater than what it is possible to have, those are taken off.
+#' @param cv.threshold A vector of floats strictly within 0 and 1. Only when d_select=\dQuote{CV}. Gives the thresholds for which the CV is to be done.
+#' @param cv.vfold An integer. Only when d_select=\dQuote{CV}. It gives the number of different subsamples in which the dataset is split. If \dQuote{cv.vfold} is greater than the number of observations, then the program equalize them.
+#' @param LOO If TRUE, it returns the results (classes and posterior probabilities) for leave-one-out cross-validation.
 #' 
 #' @details
 #' Some information on the signification of the model names:
@@ -664,8 +665,8 @@ hdda_control = function(call){
 	# model controls:
 	model = eval.parent(call[["model"]], 2)
 	d_select = eval.parent(call[["d_select"]], 2)
-	if(!is.null(model)){
-		if((length(model)>1 || (length(model)==1 && model=="ALL")) && d_select == "CV") stop("A specific model must be chosen for choosing the threshold/dimension with cross-validation.\n", call.=FALSE)
+	if(!is.null(model) & !is.null(d_select)){
+		if(d_select == "CV" && (length(model)>1 || (length(model)==1 && toupper(model)=="ALL"))) stop("A specific model must be chosen for choosing the threshold/dimension with cross-validation.\n")
 	}
 	
 	# Common dimension models
@@ -676,14 +677,14 @@ hdda_control = function(call){
 	N = sum(n)
 	p = ncol(data)
 	ModelNames <- c("AKJBKQKDK", "AKBKQKDK", "ABKQKDK", "AKJBQKDK", "AKBQKDK", "ABQKDK", "AKJBKQKD", "AKBKQKD", "ABKQKD", "AKJBQKD", "AKBQKD", "ABQKD", "AJBQD", "ABQD", "ALL")
-	if( (any(model%in%ModelNames[7:12]) && !is.null(com_dim) && com_dim > min(n, p)-1) ) stop("com_dim has to be lower or equal to ", min(n, p)-1, if(p>min(n)) paste(" because of the class", names[which.min(n)], "which has", min(n), "observations.\n") else paste(" because there are only", p, "dimensions.\n"), call.=FALSE)
-	if(any(model%in%ModelNames[13:15]) && !is.null(com_dim) && com_dim > min(N, p)-1) stop("com_dim has to be lower or equal to ", min(N, p)-1, if(p<=N) paste(" because there are only", p, "dimensions.\n") else paste(" because there are only", N, "observations.\n"), call.=FALSE)
+	if( (any(model%in%ModelNames[7:12]) && !is.null(com_dim) && com_dim > min(n, p)-1) ) stop("com_dim has to be lower or equal to ", min(n, p)-1, if(p>min(n)) paste(" because of the class", names[which.min(n)], "which has", min(n), "observations.\n") else paste(" because there are only", p, "dimensions.\n"))
+	if(any(model%in%ModelNames[13:15]) && !is.null(com_dim) && com_dim > min(N, p)-1) stop("com_dim has to be lower or equal to ", min(N, p)-1, if(p<=N) paste(" because there are only", p, "dimensions.\n") else paste(" because there are only", N, "observations.\n"))
 	
 	# LOO
 	LOO = eval.parent(call[["LOO"]], 2)
 	if(!is.null(LOO) && LOO){
-		if(!is.null(d_select) && d_select=="CV" && is.null(com_dim)) stop("The cross validation method to select the dimensions cannot be used when doing LOO. Otherwise, you can select manually the dimension for common dimension models using 'com_dim'.\n", call.=FALSE)
-		if(!is.null(model) && (length(model)>1 || model=="ALL")) stop("A specific model must be chosen for LOO.\n", call.=FALSE)
+		if(!is.null(d_select) && d_select=="CV" && is.null(com_dim)) stop("The cross validation method to select the dimensions cannot be used when doing LOO. Otherwise, you can select manually the dimension for common dimension models using 'com_dim'.\n")
+		if(!is.null(model) && (length(model)>1 || model=="ALL")) stop("A specific model must be chosen for LOO.\n")
 	}
 	
 }

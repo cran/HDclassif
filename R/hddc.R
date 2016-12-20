@@ -259,7 +259,8 @@ hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="
 		
 		# (::: is needed for windows multicore)
 		res = "unknown error"
-		try(res <- HDclassif:::hddc_main(model=model, K=K, threshold=threshold, ...))
+		# try(res <- HDclassif:::hddc_main(model=model, K=K, threshold=threshold, ...))
+		try(res <- hddc_main(model=model, K=K, threshold=threshold, ...))
 		res
 	}
 	
@@ -442,6 +443,9 @@ hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="
 
 hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, init, init.vector, mini.nb, min.individuals, noise.ctrl, com_dim=NULL, kmeans.control, d_max, ...){ 
 	
+	# for debug
+	debug = FALSE
+
 	ModelNames <- c("AKJBKQKDK", "AKBKQKDK", "ABKQKDK", "AKJBQKDK", "AKBQKDK", "ABQKDK", "AKJBKQKD", "AKBKQKD", "ABKQKD", "AKJBQKD", "AKBQKD", "ABQKD", "AJBQD", "ABQD")
 	p <- ncol(DATA)
 	N <- nrow(DATA)
@@ -518,6 +522,8 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 		
 		if (algo!='EM' && I!=1) t <- t2
 		
+		if(debug) cat("Cluster sizes: ", colSums(t), "\n")
+		
 		# Error catching
 		if (K>1){
 			if(any(is.na(t))) return("unknown error: NA in t_ik")
@@ -538,6 +544,16 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 		}
 		likely[I] <- L
 		if (I!=1) test <- abs(likely[I]-likely[I-1])
+		
+		if(debug){
+			print("d=")
+			print(m$d)
+			print("a=")
+			print(m$a)
+			print("b=")
+			print(m$b)
+		}
+		
 	}
 	
 	# We retrieve the parameters
@@ -568,7 +584,7 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 	converged = test<eps
 	
 	params = list(model=model, K=K, d=d, a=a, b=b, mu=mu, prop=prop, ev=m$ev, Q=m$Q, loglik=likely[length(likely)], loglik_all = likely, posterior=t, class=cls, com_ev=com_ev, N=N, complexity=complexity, threshold=threshold, d_select=method, converged=converged)
-	
+
 	# We compute the BIC / ICL
 	bic_icl = hdclassif_bic(params, p, DATA)
 	params$BIC = bic_icl$bic
@@ -637,7 +653,7 @@ hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim,
 	for(i in 1:K) n_bis[i] <- length(ind[[i]])
 	
 	#
-	#Calculation on Var/Covar matrices
+	# Calculation on Var/Covar matrices
 	#
 	
 	# we keep track of the trace (== sum of eigenvalues) to compute the b
@@ -651,16 +667,18 @@ hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim,
 			donnees <- hdc_myEigen(YYt, d_max)
 			traceVect = sum(diag(YYt))
 			ev <- donnees$values
-		} else{
+		} else {
 			Y <- vector(mode='list', length=K)
-			ev <- matrix(0, K, N)
+			# ev <- matrix(0, K, N) # now we use d_max
+			ev <- matrix(0, K, d_max)
 			Q <- vector(mode='list', length=K)
 			for (i in 1:K){ 
 				Y[[i]] <- (x-matrix(mu[i, ], N, p, byrow=TRUE))/sqrt(n[i])*sqrt(t[, i])
 				YYt = tcrossprod(Y[[i]])
 				donnees <- hdc_myEigen(YYt, d_max)
 				traceVect[i] = sum(diag(YYt))
-				ev[i, 1:N] <- donnees$values
+				# ev[i, 1:N] <- donnees$values # now we use d_max
+				ev[i, ] <- donnees$values
 				Q[[i]] <- donnees$vectors
 			}
 		}
@@ -671,10 +689,12 @@ hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim,
 		traceVect = sum(diag(W))
 		ev <- donnees$values
 	} else {
-		ev <- matrix(0, K, p)
+		# ev <- matrix(0, K, p) # now we use d_max
+		ev <- matrix(0, K, d_max)
 		Q <- vector(mode='list', length=K)
 		for (i in 1:K){ 
 			W = crossprod((x-matrix(mu[i, ], N, p, byrow=TRUE))*sqrt(t[, i]))/n[i]
+			# browser()
 			donnees <- hdc_myEigen(W, d_max)
 			traceVect[i] = sum(diag(W))
 			ev[i, ] <- donnees$values
@@ -682,7 +702,7 @@ hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim,
 		}
 	}	
 	
-	#Intrinsic dimensions selection
+	# Intrinsic dimensions selection
 	# browser()
 	if (model%in%c("AJBQD", "ABQD")){
 		d <- rep(com_dim, length=K)
@@ -694,7 +714,7 @@ hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim,
 		d <- hdclassif_dim_choice(ev, n, method, threshold, FALSE, noise.ctrl)
 	}
 	
-	#Setup of the Qi matrices	
+	# Setup of the Qi matrices	
 	
 	if ( model%in%c("AJBQD", "ABQD") ){
 		if (N>=p) Q <- matrix(donnees$vectors[, 1:d[1]], p, d[1])
@@ -715,7 +735,7 @@ hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim,
 		}
 	}
 	
-	#Calculation of the remaining parameters of the selected model	
+	# Calculation of the remaining parameters of the selected model	
 	
 	# PARAMETER a
 	ai <- matrix(NA, K, max(d))
@@ -736,7 +756,8 @@ hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim,
 	
 	# PARAMETER b
 	bi <- c()
-	denom = min(N,p)
+	# denom = min(N,p) # DEPREC => ask Charles
+	denom = p
 	if ( model%in%c('AKJBKQKDK', 'AKBKQKDK', 'ABKQKDK', 'AKJBKQKD', 'AKBKQKD', 'ABKQKD') ){
 		for(i in 1:K){
 			remainEV = traceVect[i] - sum(ev[i, 1:d[i]])
@@ -755,8 +776,11 @@ hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim,
 			# b <- b + sum(ev[i, (d[i]+1):min(N, p)])*prop[i]
 			b <- b + remainEV*prop[i]
 		}
-		bi[1:K] <- b/(min(N, p)-eps)
+		bi[1:K] <- b/(denom-eps)
 	}
+	
+	# We adjust the values of b if they are too low
+	bi[bi<noise.ctrl] = noise.ctrl
 	
 	list(model=model, K=K, d=d, a=ai, b=bi, mu=mu, prop=prop, ev=ev, Q=Q)
 }
@@ -868,6 +892,9 @@ hddc_control = function(call){
 	# No NA in the data:
 	if (any(is.na(data))) stop("NA values in the data are not supported. Please remove them beforehand.")
 	
+	# Size of the data
+	if(any(K>2*NROW(data))) stop("The number of observations must be at least twice the number of clusters ")
+
 	# Initialization Controls
 	if(!is.null(init)){
 		
@@ -884,10 +911,10 @@ hddc_control = function(call){
 			
 			if(length(unique(K))>1) stop("HDDC: Several number of classes K cannot be estimated when init='vector'.")
 			
-			init.vector <- unclass(init.vector)
+			init.vector <- unclass(as.factor(init.vector))
 			if(K!=max(init.vector)) stop("The number of class K, and the number of classes in the initialization vector are different")
 			
-			if( length(init)!=nrow(data) ) stop("The size of the initialization vector is different of the size of the data")
+			if( length(init.vector)!=nrow(data) ) stop("The size of the initialization vector is different of the size of the data")
 		}
 		
 		# The param init

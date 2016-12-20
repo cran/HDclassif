@@ -2,12 +2,12 @@ Encoding: UTF-8
 Package: HDclassif
 Type: Package
 Title: High Dimensional Supervised Classification and Clustering
-Version: 2.0
+Version: 2.0.2
 Depends: grDevices, utils, graphics, stats, MASS
 Imports: rARPACK
-Date: 2016-06-30
+Date: 2016-12-20
 Author: Laurent Berge, Charles Bouveyron and Stephane Girard
-Maintainer: Laurent Berge <laurent.berge@u-bordeaux.fr>
+Maintainer: Laurent Berge <laurent.berge@uni.lu>
 Description: Discriminant analysis and data clustering methods for high
     dimensional data, based on the assumption that high-dimensional data live in
     different subspaces with low dimensionality proposing a new parametrization of
@@ -18,6 +18,6 @@ LazyLoad: yes
 ZipData: no
 RoxygenNote: 5.0.1
 NeedsCompilation: no
-Packaged: 2016-08-01 14:46:45 UTC; laurent
+Packaged: 2016-12-20 10:59:55 UTC; laurent.berge
 Repository: CRAN
-Date/Publication: 2016-08-01 17:29:43
+Date/Publication: 2016-12-20 15:48:24

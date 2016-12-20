@@ -116,7 +116,7 @@ demo_hddc_crabs <- function(DATA, k=4, model='AKBKQKD',threshold=0.2, method='ca
 		if (algo!='EM' && I!=1) t <- t2
 		if (k>1 && (any(is.na(t)) || any(colSums(t>1/k)<min.individuals))) return(1)
 		# browser()
-		m <- hddc_m_step(DATA, k, t, model, threshold, method, noise.ctrl, 1)
+		m <- hddc_m_step(DATA, k, t, model, threshold, method, noise.ctrl, 1, ncol(DATA))
 		t <- hddc_e_step(DATA, m)
 		
 		L <- t$L
