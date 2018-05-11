@@ -9,23 +9,24 @@
 #' @param model A character string vector, or an integer vector indicating the models to be used. The available models are: "AkjBkQkDk" (default), "AkBkQkDk", "ABkQkDk", "AkjBQkDk", "AkBQkDk", "ABQkDk", "AkjBkQkD", "AkBkQkD", "ABkQkD", "AkjBQkD", "AkBQkD", "ABQkD", "AjBQD", "ABQD". It is not case sensitive and integers can be used instead of names, see details for more information. Several models can be used, if it is, only the results of the one which maximizes the BIC criterion is kept. To run all models, use model="ALL".
 #' @param threshold A float stricly within 0 and 1. It is the threshold used in the Cattell's Scree-Test.
 #' @param criterion Either \dQuote{BIC} or \dQuote{ICL}. If several models are run, the best model is selected using the criterion defined by \code{criterion}.
-#' @param com_dim It is used only for common dimensions models. The user can give the common dimension he wants. If used, it must be an integer. Its default is set to NULL.
+#' @param com_dim It is used only for common dimensions models. The user can give the common dimension s/he wants. If used, it must be an integer. Its default is set to NULL.
 #' @param itermax The maximum number of iterations allowed. The default is 200.
-#' @param eps A positive double. It is the stopping criterion: the algorithm stops when the difference between two successive Log Likelihoods is lower than \sQuote{eps}.
+#' @param eps A positive double, default is 0.001. It is the stopping criterion: the algorithm stops when the difference between two successive log-likelihoods is lower than \sQuote{eps}.
 #' @param algo A character string indicating the algorithm to be used. The available algorithms are the Expectation-Maximisation ("EM"), the Classification E-M ("CEM") and the Stochastic E-M ("SEM"). The default algorithm is the "EM".
 #' @param d_select Either \dQuote{Cattell} (default) or \dQuote{BIC}. See details for more information. This parameter selects which method to use to select the intrinsic dimensions.
-#' @param init A character string or a vector of clusters. It is the way to initialize the E-M algorithm. There are five ways of initialization: \dQuote{kmeans} (default), \dQuote{param}, \dQuote{random}, \dQuote{mini-em} or \dQuote{vector}. See details for more information. It can also be directly initialized with a vector containing the prior classes of the observations.
-#' @param init.vector A vector of integers or factors. It is a user-given initialization. It should be of the same length as of the data. Only used when \code{init="vector"}.
-#' @param show Use show = FALSE to settle off the informations that may be printed.
-#' @param mini.nb A vector of integers of length two. This parameter is used in the \dQuote{mini-em} initialization. The first integer sets how many times the algorithm is repeated; the second sets the maximum number of iterations the algorithm will do each time. For example, if init=\dQuote{mini-em} and mini.nb=c(5,10), the algorithm wil be lauched 5 times, doing each time 10 iterations; finally the algorithm will begin with the initialization that maximizes the log-likelihood. 
+#' @param init A character string or a vector of clusters. It is the way to initialize the E-M algorithm. There are five possible initialization: \dQuote{kmeans} (default), \dQuote{param}, \dQuote{random}, \dQuote{mini-em} or \dQuote{vector}. See details for more information. It can also be directly initialized with a vector containing the prior classes of the observations. If \code{init = "vector"}, then you should add the argument \code{init.vector}.
+#' @param init.vector A vector of integers or factors. It is a user-given initialization. It should be of the same length as of the data. Only used when \code{init = "vector"}.
+#' @param show Use \code{show = FALSE} to settle off the informations that may be printed. Default is TRUE.
+#' @param mini.nb A vector of integers of length two. This parameter is used in the \dQuote{mini-em} initialization. The first integer sets how many times the algorithm is repeated; the second sets the maximum number of iterations the algorithm will do each time. For example, if \code{init="mini-em"} and \code{mini.nb=c(5,10)}, the algorithm wil be lauched 5 times, doing each time 10 iterations; finally the algorithm will begin with the initialization that maximizes the log-likelihood. 
 #' @param scaling Logical: whether to scale the dataset (mean=0 and standard-error=1 for each variable) or not. By default the data is not scaled.
-#' @param min.individuals This parameter is used to control for the minimum population of a class. If the population of a class becomes stricly inferior to 'min.individuals' then the algorithm stops and gives the message: 'pop<min.indiv.'. Here the meaning of "population of a class" is the sum of its posterior probabilities. The value of 'min.individuals' cannot be lower than 2.
+#' @param min.individuals Positive integer greater than 2 (default). This parameter is used to control for the minimum population of a class. If the population of a class becomes stricly inferior to 'min.individuals' then the algorithm stops and gives the message: 'pop<min.indiv.'. Here the meaning of "population of a class" is the sum of its posterior probabilities. The value of 'min.individuals' cannot be lower than 2.
 #' @param noise.ctrl This parameter avoids to have a too low value of the 'noise' parameter b. It garantees that the dimension selection process do not select too many dimensions (which leads to a potential too low value of the noise parameter b). When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to noise.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.
-#' @param mc.cores Positive integer, default is 1. If \code{mc.cores>1}, then parallel computing is used, using \code{mc.cores} cores. Warning for Windows users only: the parallel computing can sometimes be slower than using one single core (due to how parLapply works).
+#' @param mc.cores Positive integer, default is 1. If \code{mc.cores>1}, then parallel computing is used, using \code{mc.cores} cores. Warning for Windows users only: the parallel computing can sometimes be slower than using one single core (due to how \code{\link[parallel]{parLapply}} works).
 #' @param nb.rep A positive integer (default is 1). Each estimation (i.e. combination of (model, K, threshold)) is repeated \code{nb.rep} times and only the estimation with the highest log-likelihood is kept.
 #' @param keepAllRes Logical. Should the results of all runs be kept? If so, an argument \code{all_results} is created in the results. Default is \code{TRUE}.
 #' @param kmeans.control A list. The elements of this list should match the parameters of the kmeans initialization (see \code{\link[stats]{kmeans}} help for details). The parameters are \dQuote{iter.max}, \dQuote{nstart} and \dQuote{algorithm}.
-#' @param d_max A positive integer. The maximum number of dimensions to be computed. Default is 100. It means that the instrinsic dimension of any cluster cannot be larger than \code{dmax}. It quickens a lot the algorithm for datasets with a large number of variables (e.g. thousands).
+#' @param d_max A positive integer. The maximum number of dimensions to be computed. Default is 100. It means that the instrinsic dimension of any cluster cannot be larger than \code{d_max}. It quickens a lot the algorithm for datasets with a large number of variables (e.g. thousands).
+#' @param subset An positive integer, default is \code{Inf}. In case of large data sets it might be useful to perform HDDC on a subsample of the data: this is the use of this argument. If \code{subset} is to a value smaller than the number of observations of the dataset then: HDDC is performed on a random subsample of size \code{subset} and once a clustering is obtained on this subsample, the posterior of the clustering is computed on the full sample. 
 #' @param d DEPRECATED. This parameter is kept for retro compatibility. Now please use the parameter d_select. 
 #' 
 #' @details
@@ -73,7 +74,7 @@
 #' AjBQD \tab 13 \tab  \tab ABQD \tab 14
 #' }
 #' 
-#' The parameter d, is used to select the intrinsic dimensions of the subclasses. Here are his definictions:
+#' The parameter \code{d_select}, is used to select the intrinsic dimensions of the subclasses. Here are its definitions:
 #' 		\itemize{
 #' 			\item{\dQuote{Cattell}:}{
 #' 				The Cattell's scree-test is used to gather the intrinsic dimension of each class. If the model is of common dimension (models 7 to 14), the scree-test is done on the covariance matrix of the whole dataset.
@@ -124,7 +125,7 @@
 #' \item{ ev }{The eigen values of the var/covar matrix.}
 #' \item{ Q }{The orthogonal matrix of orientation of each class.}
 #' \item{ loglik }{The log-likelihood.}
-#' \item{ loglik_all }{The log-likelihood of all iterations.}
+#' \item{ loglik_all }{The log-likelihood of all iterations. Note that if \code{subset} was used, then this vector represents the likelihoods evaluations for the subsample on which HDDC was performed (i.e. not the likelihood for the full dataset -- so these values are smaller than the on given in \sQuote{loglik} which concerns the whole sample after the estimation).}
 #' \item{ posterior }{The matrix of the probabilities to belong to a class for each observation and each class.}
 #' \item{ class }{The class vector obtained by the clustering.}
 #' \item{ com_ev }{Only if this is a common dimension model. The eigenvalues of the var/covar matrix of the whole dataset.}
@@ -136,10 +137,10 @@
 #' \item{ ICL }{The ICL of the model.}
 #' \item{ criterion }{The criterion used to select the model.}
 #' \item{ call }{The call.}
-#' \item{ complexity_allModels }{The number of parameters for all the models that were run (used to compute the slope heuristic).}
-#' \item{ allCriteria }{The data.frame with the combination (model, K, threshold) and the associated values of the likelihood (LL), BIC and ICL, as well as the rank of each of the models with respect to the selection criterion.}
+#' \item{ allCriteria }{The data.frame with the combination (model, K, threshold) and the associated values of the likelihood (LL), BIC and ICL, as well as the rank of each of the models with respect to the selection criterion. It also reports the original order in which were estimated the models as well as each model complexity}
 #' \item{ all_results }{Only if \code{keepAllRes=TRUE}. The parameters of all estimations that were run.}
 #' \item{ scaling }{Only if \code{scaling=TRUE}. The centers and the standard deviation of the original dataset.}
+#' \item{ id_subset }{Only if \code{subset} is used. The observation IDs of the subsample on which the HDDC parameters were estimated.}
 #' 
 #' @concept
 #' clustering
@@ -187,7 +188,21 @@
 #' prms5 <- hddc(Crabs[,-1], K=1:8, model=c(1,2,7,9), mc.cores=2)
 #' }
 #' 
-hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="bic", com_dim=NULL, itermax=200, eps=1e-3, algo='EM', d_select="Cattell", init='kmeans', init.vector, show=TRUE, mini.nb=c(5, 10), scaling=FALSE, min.individuals=2, noise.ctrl=1e-8, mc.cores=1, nb.rep=1, keepAllRes=TRUE, kmeans.control = list(), d_max=100, d){
+#' # LARGE DATASETS
+#' # Assume you have a very large data set 
+#' # => you can use the argument 'subset' to obtain quick results:
+#' \dontrun{
+#' # we take a subset of 10000 observations and run hddc
+#' # once the classification is done, the posterior is computed 
+#' # on the full data
+#' prms = hddc(bigData, subset = 10000)
+#' # You obtain a much faster (although less precise) 
+#' # classification of the full dataset:
+#' table(prms$class)
+#' }
+#' 
+#' 
+hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="bic", com_dim=NULL, itermax=200, eps=1e-3, algo='EM', d_select="Cattell", init='kmeans', init.vector, show=TRUE, mini.nb=c(5, 10), scaling=FALSE, min.individuals=2, noise.ctrl=1e-8, mc.cores=1, nb.rep=1, keepAllRes=TRUE, kmeans.control = list(), d_max=100, subset=Inf, d){
 	
 	# For compatibility with old versions of HDclassif
 	if(!missing(d) & missing(d_select)) d_select = d
@@ -283,7 +298,7 @@ hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="
 	if(mc.cores == 1){
 		# If there is no need for parallel, we just use lapply // in order to have the same output
 		
-		par.output = lapply(mkt_univariate, hddcWrapper, DATA=data, method=d_select, algo=algo, itermax=itermax, eps=eps, init=init, init.vector=init.vector, mini.nb=mini.nb, min.individuals=min.individuals, noise.ctrl=noise.ctrl, com_dim=com_dim, kmeans.control=kmeans.control, d_max=d_max)
+		par.output = lapply(mkt_univariate, hddcWrapper, DATA=data, method=d_select, algo=algo, itermax=itermax, eps=eps, init=init, init.vector=init.vector, mini.nb=mini.nb, min.individuals=min.individuals, noise.ctrl=noise.ctrl, com_dim=com_dim, kmeans.control=kmeans.control, d_max=d_max, subset = subset)
 		
 	} else if(Sys.info()[['sysname']] == 'Windows'){
 		# we use parLapply:
@@ -309,7 +324,7 @@ hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="
 		
 		## run the parallel
 		par.output = NULL
-		try(par.output <- parallel::parLapply(cl, mkt_univariate, hddcWrapper, DATA=data, method=d_select, algo=algo, itermax=itermax, eps=eps, init=init, init.vector=ifelse(missing(init.vector), NA, init.vector), mini.nb=mini.nb, min.individuals=min.individuals, noise.ctrl=noise.ctrl, com_dim=com_dim, kmeans.control=kmeans.control, d_max=d_max))
+		try(par.output <- parallel::parLapply(cl, mkt_univariate, hddcWrapper, DATA=data, method=d_select, algo=algo, itermax=itermax, eps=eps, init=init, init.vector=ifelse(missing(init.vector), NA, init.vector), mini.nb=mini.nb, min.individuals=min.individuals, noise.ctrl=noise.ctrl, com_dim=com_dim, kmeans.control=kmeans.control, d_max=d_max, subset = subset))
 		
 		## Stop the clusters
 		parallel::stopCluster(cl)
@@ -320,7 +335,7 @@ hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="
 		# we use mclapply
 		
 		par.output = NULL
-		try(par.output <- parallel::mclapply(mkt_univariate, hddcWrapper, DATA=data, method=d_select, algo=algo, itermax=itermax, eps=eps, init=init, init.vector=init.vector, mini.nb=mini.nb, min.individuals=min.individuals, noise.ctrl=noise.ctrl, com_dim=com_dim, kmeans.control=kmeans.control, d_max=d_max, mc.cores=mc.cores))
+		try(par.output <- parallel::mclapply(mkt_univariate, hddcWrapper, DATA=data, method=d_select, algo=algo, itermax=itermax, eps=eps, init=init, init.vector=init.vector, mini.nb=mini.nb, min.individuals=min.individuals, noise.ctrl=noise.ctrl, com_dim=com_dim, kmeans.control=kmeans.control, d_max=d_max, subset = subset, mc.cores=mc.cores))
 		
 		if(is.null(par.output)) stop("Unknown error in the parallel computing. Try mc.cores=1 to detect the problem.")
 		
@@ -387,9 +402,12 @@ hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="
 	
 	# Other output
 	prms$call = call
-	# We add the complexity
-	names(comp_all) = mkt_univariate[modelKeep]
-	prms$complexity_allModels = comp_all
+	
+	# DEPREC => now complexity is directly added in allCriteria
+	# # We add the complexity
+	# names(comp_all) = mkt_univariate[modelKeep]
+	# prms$complexity_allModels = comp_all
+	# END DEPREC
 	
 	# Display
 	if(show){
@@ -421,7 +439,8 @@ hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="
 	}
 	
 	# We also add the matrix of all criteria
-	allCriteria = data.frame(model=model[myOrder], K=K[myOrder], threshold=threshold[myOrder], LL=LL_all[myOrder], BIC=BIC[myOrder], ICL=ICL[myOrder], rank = 1:length(myOrder))
+	# we also report the complexity HERE
+	allCriteria = data.frame(model=model[myOrder], K=K[myOrder], threshold=threshold[myOrder], LL=LL_all[myOrder], BIC=BIC[myOrder], ICL=ICL[myOrder], rank = 1:length(myOrder), originalOrder = myOrder, complexity = comp_all[myOrder])
 	
 	# we add the comments if necessary
 	if(any(comment_all != "")) allCriteria$comment = comment_all[myOrder]
@@ -441,7 +460,7 @@ hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="
 	return(prms)
 }
 
-hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, init, init.vector, mini.nb, min.individuals, noise.ctrl, com_dim=NULL, kmeans.control, d_max, ...){ 
+hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, init, init.vector, mini.nb, min.individuals, noise.ctrl, com_dim=NULL, kmeans.control, d_max, subset, ...){ 
 	
 	# for debug
 	debug = FALSE
@@ -450,6 +469,19 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 	p <- ncol(DATA)
 	N <- nrow(DATA)
 	com_ev <- NULL
+	
+	# SUBSET -- When we apply hddc to a subsample: (other bit of code at the end of this function)
+	isSubset = FALSE
+	if(subset < N){
+		isSubset = TRUE # used later
+		# 1) we save the original data 
+		# 2) we create a subsample
+		#/ 3) update N
+		DATA_save = DATA
+		id_subset = sample(N, subset) # we save it
+		DATA = DATA[id_subset, ]
+		N = subset
+	}
 	
 	# We set d_max to a proper value
 	d_max = min(N, p, d_max)
@@ -485,7 +517,7 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 			b <- sum(ev[(d[1]+1):p])/(p-d[1])
 			
 			Q <- donnees$vectors[, 1:d]
-			mu <- mvrnorm(K, MU, S)
+			mu <- MASS::mvrnorm(K, MU, S)
 			
 			K_pen <- diag((mu%*%Q%*%diag(1/a, d, d))%*%(t(Q)%*%t(mu)))-2*(mu%*%Q%*%diag(1/a, d, d))%*%(t(Q)%*%t(DATA))+1/b*(diag(tcrossprod(mu))-2*mu%*%t(DATA)+2*(mu%*%Q)%*%(t(Q)%*%t(DATA))-diag(tcrossprod(mu%*%Q)))-2*log(c(prop))
 			
@@ -498,7 +530,7 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 		} else if (init=='mini-em'){
 			prms_best <- 1
 			for (i in 1:mini.nb[1]){
-				prms <- hddc_main(DATA, K, model, threshold, method, algo, mini.nb[2], 0, 'random', mini.nb = mini.nb, min.individuals = min.individuals, noise.ctrl = noise.ctrl, com_dim = com_dim, d_max=d_max)
+				prms <- hddc_main(DATA, K, model, threshold, method, algo, mini.nb[2], 0, 'random', mini.nb = mini.nb, min.individuals = min.individuals, noise.ctrl = noise.ctrl, com_dim = com_dim, d_max=d_max, subset=subset)
 				if(length(prms)!=1){
 					if (length(prms_best)==1) prms_best <- prms
 					else if (prms_best$loglik[length(prms_best$loglik)]<prms$loglik[length(prms$loglik)]) prms_best <- prms
@@ -516,11 +548,11 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 	} else t <- matrix(1, N, 1)
 	
 	likely <- c()
-	I <- 0
+	iter <- 0
 	test <- Inf
-	while ((I <- I+1)<=itermax && test>=eps){
+	while ((iter <- iter+1)<=itermax && test>=eps){
 		
-		if (algo!='EM' && I!=1) t <- t2
+		if (algo!='EM' && iter!=1) t <- t2
 		
 		if(debug) cat("Cluster sizes: ", colSums(t), "\n")
 		
@@ -531,10 +563,14 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 			if(any(colSums(t>1/K)<min.individuals)) return("pop<min.individuals")
 		}
 		
+		if(debug) cat("m-step...")
 		m <- hddc_m_step(DATA, K, t, model, threshold, method, noise.ctrl, com_dim, d_max)
+		if(debug) cat("e-step...")
 		t <- hddc_e_step(DATA, m)
+		
 		L <- t$L
 		t <- t$t
+		
 		if (algo=='CEM') {
 			t2 <- matrix(0, N, K)
 			t2[cbind(1:N, max.col(t))] <- 1
@@ -542,8 +578,9 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 			t2 <- matrix(0, N, K)
 			for (i in 1:N)	t2[i, ] <- t(rmultinom(1, 1, t[i, ]))
 		}
-		likely[I] <- L
-		if (I!=1) test <- abs(likely[I]-likely[I-1])
+		
+		likely[iter] <- L
+		if (iter!=1) test <- abs(likely[iter]-likely[iter-1])
 		
 		if(debug){
 			print("d=")
@@ -554,6 +591,11 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 			print(m$b)
 		}
 		
+	}
+	
+	# Warning message ITERATIONS
+	if(iter >= itermax && itermax != mini.nb[2]){
+		warning("Maximum iterations reached (", itermax, ").")
 	}
 	
 	# We retrieve the parameters
@@ -583,7 +625,24 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 	cls <- max.col(t)
 	converged = test<eps
 	
-	params = list(model=model, K=K, d=d, a=a, b=b, mu=mu, prop=prop, ev=m$ev, Q=m$Q, loglik=likely[length(likely)], loglik_all = likely, posterior=t, class=cls, com_ev=com_ev, N=N, complexity=complexity, threshold=threshold, d_select=method, converged=converged)
+	params = list(model=model, K=K, d=d, a=a, b=b, mu=mu, prop=prop, ev=m$ev, Q=m$Q, loglik=likely[length(likely)], loglik_all = likely, posterior=t, class=cls, com_ev=com_ev, N=N, complexity=complexity, threshold=threshold, d_select=method, converged=converged, iterations=iter-1)
+	
+	# SUBSET -- We update if a subset was used 
+	if(isSubset){
+		# 1) compute the posterior on the FULL data
+		# 2) we report the loglik & posterior for the FULL data 
+		# 3) we report the Id of the subsample on which the HDDC parameters were obtained
+		e = hddc_e_step(DATA_save, m)
+		
+		params$loglik = e$L
+		params$posterior = e$t
+		params$id_subset = id_subset
+		
+		# For the BIC/ICL (Data may be useful for specific models)
+		if (model%in%c("ABQD", "AJBQD")){
+			DATA = DATA_save
+		}
+	}
 
 	# We compute the BIC / ICL
 	bic_icl = hdclassif_bic(params, p, DATA)
@@ -629,12 +688,15 @@ hddc_e_step  <- function(x, par){
 		}
 	}
 	
+	# The likelihood
 	A <- -1/2*t(K_pen)
-	L <- sum(log(rowSums(exp(A-apply(A,1,max))))+apply(A,1,max))
+	A_max = apply(A,1,max)
+	L <- sum(log(rowSums(exp(A-A_max))) + A_max)
 	
+	# the posterior
 	t <- matrix(0,N,K)
 	for (i in 1:K) t[,i] <- 1/rowSums(exp((K_pen[i,]-t(K_pen))/2))
-	list(t=t,L=L)
+	list(t=t, L=L)
 }
 
 hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim, d_max){
@@ -703,7 +765,7 @@ hddc_m_step  <- function(x, K, t, model, threshold, method, noise.ctrl, com_dim,
 	}	
 	
 	# Intrinsic dimensions selection
-	# browser()
+	
 	if (model%in%c("AJBQD", "ABQD")){
 		d <- rep(com_dim, length=K)
 	} else if ( model%in%c("AKJBKQKD", "AKBKQKD", "ABKQKD", "AKJBQKD", "AKBQKD", "ABQKD") ){
@@ -801,52 +863,134 @@ hddc_ari <- function(x,y){
 
 #' Slope Heuristic for HDDC objects
 #' 
-#' This function computes the slope heuristic for an 
+#' @description  This function computes the slope heuristic for a set of objects obtained by the function \code{\link{hddc}}. The slope heuristic is a criterion in which the likelihood is penalized according to the result of the fit of the likelihoods on the complexities of the models.
 #'
 #' @param x An \code{hdc} object, obtained from the function \code{\link{hddc}}.
+#' @param plot Logical, default is \code{FALSE}. If \code{TRUE}, then a graph representing: 1) the likelihoods, the complexity, the fit (i.e. the slope) and 2) the value of the slope heuristic (in blue squares).
 #'
 #' @return
 #' A list of two elements:
-#' \item{best_model}{The index of the best model, among all estimated models.}
-#' \item{crit}{The slope heuristic criterion for each of the estimated models.}
+#' \item{best_model_index}{The index of the best model, among all estimated models.}
+#' \item{allCriteria}{The data.frame containing all the criteria, with the new slope heuristic.}
 #'  
-#' @export
+#' @details 
+#' This function is only useful if there are many models (at least 3, better if more) that were estimated by the function \code{\link{hddc}}. If there are less than 2 models, the function wil l return an error.
 #'
 #' @examples
 #' # Clustering of the Crabs data set
 #' data(Crabs)
-#' prms = hddc(Crabs[,-1], K=1:10)
-#' slope = slopeHeuristic(prms)
-#' plot(slope$crit) # The best model is indeed for 4 clusters
-#' prms$all_results[[slope$best_model]] # we extract the best model
+#' prms = hddc(Crabs[,-1], K = 1:10) # we estimate ten models
+#' slope = slopeHeuristic(prms, plot = TRUE)
+#' plot(slope$allCriteria) # The best model is indeed for 4 clusters
+#' prms$all_results[[slope$best_model_index]] # we extract the best model
 #' 
 #' 
-slopeHeuristic <- function(x) {
-	
+slopeHeuristic <- function(x, plot = FALSE){
 	# x is a hddc object
+	# NEW VERSION => now everything is in the object allCriteria
 	
-	nbparam = x$complexity_allModels
-	loglik = x$allCriteria$LL
+	# Setting up the data for estimation => selection of valid models
+	main_data = x$allCriteria
+	who_notNA_norInfinite = !is.na(main_data$complexity) & is.finite(main_data$LL)
 	
-	# Controlling for NA
-	n = length(nbparam)
-	crit = rep(NA, n)
-	quiNotNA = which(!is.na(nbparam))
+	n_valid = sum(who_notNA_norInfinite)
+	if(n_valid == 0){
+		stop("There is not any valid model to be selected.")
+	} else if(n_valid <= 2){
+		stop("At least 3 valid models are necessary to perform the slope heuristic. Otherwise, use another criterion.")
+	}
 	
-	nbparam = nbparam[quiNotNA]
-	loglik = loglik[quiNotNA]
+	# Robust estimation
+	main_data = main_data[who_notNA_norInfinite, ]
+	fit = MASS::rlm(LL ~ complexity, data=main_data, method='MM')
 	
-	# Slope heuristic
-	dd = data.frame(nbp=nbparam,ll=loglik)
-	fit = MASS::rlm(ll ~ nbp, data=dd, method='MM')
-	if(fit$coefficients[2]<0) fit$coefficients[2]=0
-	dd$llpen = dd$ll- 2* fit$coefficients[2]*dd$nbp
+	# To avoid problems (no negative slope allowed => weird anyway)
+	fit_coef = fit$coefficients
+	if(fit_coef[2]<0){
+		fit_coef[2]=0
+	}
 	
-	crit[quiNotNA] = 2*dd$llpen
+	# the new penalized likelihood
+	llpen = main_data$LL- 2* fit_coef[2]*main_data$complexity
+	SH = 2* llpen
 	
-	names(crit) = names(nbparam)
+	res = x$allCriteria
+	res$SlopeHeuristic = NA
+	res$SlopeHeuristic[who_notNA_norInfinite] = SH
 	
-	list(best_model = which.max(crit), crit = crit)
+	# PLot (optional)
+	if(plot){
+		# some parameters
+		color_comp = "darkred"
+		color_SH = "navyblue"
+		
+		pch_comp = 17
+		pch_SH = 15
+		
+		# the original data points
+		x = main_data$complexity
+		y = main_data$LL
+		plot(x, y, xlab = "Complexity", main = "Slope Heuristic", ylab = "", pch = pch_comp, col = color_comp, axes = FALSE)
+		graphics::box()
+		axis(1)
+		axis(2, col.axis = color_comp)
+		
+		# The fit
+		abline(fit_coef[1], fit_coef[2], col = color_comp)
+		
+		# the new values => slope heuristic
+		new_y = SH
+		y_min = min(y)
+		y_max = max(y)
+		# we put it in the old coordinates
+		new_y_oldCoords = ( (new_y - min(new_y))/diff(range(new_y)) ) * (y_max - y_min) + y_min
+		
+		points(x, new_y_oldCoords, pch = pch_SH, col = color_SH)
+		right_coord = axis(4, labels = NA, lwd = 0)
+		right_coord_label = ( (right_coord - min(right_coord))/diff(range(right_coord)) ) * (max(SH) - min(SH)) + min(SH)
+		axis(4, right_coord, round(right_coord_label), col.axis = color_SH)
+		
+		# the legend
+		# legend("bottomright", pch = c(1, 15), legend = c("Likelihood", "Slope Heuristic (right)"))
+		graphics::title(ylab = expression(paste("Likelihood", "     ", phantom("Slope Heuristic (square, right)"))), col.lab = color_comp)
+		graphics::title(ylab = expression(paste(phantom("Likelihood"), "  /  ", phantom("Slope Heuristic (square, right)"))))
+		graphics::title(ylab = expression(paste(phantom("Likelihood     "), "Slope Heuristic (square, right)")), col.lab = color_SH)
+		
+		
+	}
+	
+	
+	# Return:
+	# name of the "best" model
+	i = which.max(SH)
+	best_model = res$originalOrder[which.max(SH)]
+	names(best_model) = paste0(res$model[i], "_K", res$K[i], "_Thresh", res$threshold[i])
+	
+	list(best_model_index = best_model, allCriteria = res)
+	
+	# DEPREC
+	# nbparam = x$complexity_allModels
+	# loglik = x$allCriteria$LL
+	# 
+	# # Controlling for NA
+	# n = length(nbparam)
+	# crit = rep(NA, n)
+	# quiNotNA = which(!is.na(nbparam))
+	# 
+	# nbparam = nbparam[quiNotNA]
+	# loglik = loglik[quiNotNA]
+	# 
+	# # Slope heuristic
+	# dd = data.frame(nbp=nbparam,ll=loglik)
+	# fit = MASS::rlm(ll ~ nbp, data=dd, method='MM')
+	# if(fit$coefficients[2]<0) fit$coefficients[2]=0
+	# dd$llpen = dd$ll- 2* fit$coefficients[2]*dd$nbp
+	# 
+	# crit[quiNotNA] = 2*dd$llpen
+	# 
+	# names(crit) = names(nbparam)
+	# 
+	# list(best_model = which.max(crit), crit = crit)
 }
 
 ####
@@ -877,6 +1021,7 @@ hddc_control = function(call){
 	myCallAlerts(call, "nb.rep", "singleIntegerGE1", 3, FALSE, prefix)
 	myCallAlerts(call, "keepAllRes", "singleLogical", 3, FALSE, prefix)
 	myCallAlerts(call, "d_max", "singleIntegerGE1", 3, FALSE, prefix)
+	myCallAlerts(call, "subset", "singleNumericGE1", 3, FALSE, prefix)
 	
 	
 	####

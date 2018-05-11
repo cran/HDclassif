@@ -4,27 +4,31 @@
 \alias{slopeHeuristic}
 \title{Slope Heuristic for HDDC objects}
 \usage{
-slopeHeuristic(x)
+slopeHeuristic(x, plot = FALSE)
 }
 \arguments{
 \item{x}{An \code{hdc} object, obtained from the function \code{\link{hddc}}.}
+
+\item{plot}{Logical, default is \code{FALSE}. If \code{TRUE}, then a graph representing: 1) the likelihoods, the complexity, the fit (i.e. the slope) and 2) the value of the slope heuristic (in blue squares).}
 }
 \value{
 A list of two elements:
-\item{best_model}{The index of the best model, among all estimated models.}
-\item{crit}{The slope heuristic criterion for each of the estimated models.}
+\item{best_model_index}{The index of the best model, among all estimated models.}
+\item{allCriteria}{The data.frame containing all the criteria, with the new slope heuristic.}
 }
 \description{
-This function computes the slope heuristic for an
+This function computes the slope heuristic for a set of objects obtained by the function \code{\link{hddc}}. The slope heuristic is a criterion in which the likelihood is penalized according to the result of the fit of the likelihoods on the complexities of the models.
+}
+\details{
+This function is only useful if there are many models (at least 3, better if more) that were estimated by the function \code{\link{hddc}}. If there are less than 2 models, the function wil l return an error.
 }
 \examples{
 # Clustering of the Crabs data set
 data(Crabs)
-prms = hddc(Crabs[,-1], K=1:10)
-slope = slopeHeuristic(prms)
-plot(slope$crit) # The best model is indeed for 4 clusters
-prms$all_results[[slope$best_model]] # we extract the best model
+prms = hddc(Crabs[,-1], K = 1:10) # we estimate ten models
+slope = slopeHeuristic(prms, plot = TRUE)
+plot(slope$allCriteria) # The best model is indeed for 4 clusters
+prms$all_results[[slope$best_model_index]] # we extract the best model
 
 
 }
-

@@ -9,7 +9,7 @@ hddc(data, K = 1:10, model = c("AkjBkQkDk"), threshold = 0.2,
   algo = "EM", d_select = "Cattell", init = "kmeans", init.vector,
   show = TRUE, mini.nb = c(5, 10), scaling = FALSE, min.individuals = 2,
   noise.ctrl = 1e-08, mc.cores = 1, nb.rep = 1, keepAllRes = TRUE,
-  kmeans.control = list(), d_max = 100, d)
+  kmeans.control = list(), d_max = 100, subset = Inf, d)
 }
 \arguments{
 \item{data}{A matrix or a data frame of observations, assuming the rows are the observations and the columns the variables. Note that NAs are not allowed.}
@@ -22,31 +22,31 @@ hddc(data, K = 1:10, model = c("AkjBkQkDk"), threshold = 0.2,
 
 \item{criterion}{Either \dQuote{BIC} or \dQuote{ICL}. If several models are run, the best model is selected using the criterion defined by \code{criterion}.}
 
-\item{com_dim}{It is used only for common dimensions models. The user can give the common dimension he wants. If used, it must be an integer. Its default is set to NULL.}
+\item{com_dim}{It is used only for common dimensions models. The user can give the common dimension s/he wants. If used, it must be an integer. Its default is set to NULL.}
 
 \item{itermax}{The maximum number of iterations allowed. The default is 200.}
 
-\item{eps}{A positive double. It is the stopping criterion: the algorithm stops when the difference between two successive Log Likelihoods is lower than \sQuote{eps}.}
+\item{eps}{A positive double, default is 0.001. It is the stopping criterion: the algorithm stops when the difference between two successive log-likelihoods is lower than \sQuote{eps}.}
 
 \item{algo}{A character string indicating the algorithm to be used. The available algorithms are the Expectation-Maximisation ("EM"), the Classification E-M ("CEM") and the Stochastic E-M ("SEM"). The default algorithm is the "EM".}
 
 \item{d_select}{Either \dQuote{Cattell} (default) or \dQuote{BIC}. See details for more information. This parameter selects which method to use to select the intrinsic dimensions.}
 
-\item{init}{A character string or a vector of clusters. It is the way to initialize the E-M algorithm. There are five ways of initialization: \dQuote{kmeans} (default), \dQuote{param}, \dQuote{random}, \dQuote{mini-em} or \dQuote{vector}. See details for more information. It can also be directly initialized with a vector containing the prior classes of the observations.}
+\item{init}{A character string or a vector of clusters. It is the way to initialize the E-M algorithm. There are five possible initialization: \dQuote{kmeans} (default), \dQuote{param}, \dQuote{random}, \dQuote{mini-em} or \dQuote{vector}. See details for more information. It can also be directly initialized with a vector containing the prior classes of the observations. If \code{init = "vector"}, then you should add the argument \code{init.vector}.}
 
-\item{init.vector}{A vector of integers or factors. It is a user-given initialization. It should be of the same length as of the data. Only used when \code{init="vector"}.}
+\item{init.vector}{A vector of integers or factors. It is a user-given initialization. It should be of the same length as of the data. Only used when \code{init = "vector"}.}
 
-\item{show}{Use show = FALSE to settle off the informations that may be printed.}
+\item{show}{Use \code{show = FALSE} to settle off the informations that may be printed. Default is TRUE.}
 
-\item{mini.nb}{A vector of integers of length two. This parameter is used in the \dQuote{mini-em} initialization. The first integer sets how many times the algorithm is repeated; the second sets the maximum number of iterations the algorithm will do each time. For example, if init=\dQuote{mini-em} and mini.nb=c(5,10), the algorithm wil be lauched 5 times, doing each time 10 iterations; finally the algorithm will begin with the initialization that maximizes the log-likelihood.}
+\item{mini.nb}{A vector of integers of length two. This parameter is used in the \dQuote{mini-em} initialization. The first integer sets how many times the algorithm is repeated; the second sets the maximum number of iterations the algorithm will do each time. For example, if \code{init="mini-em"} and \code{mini.nb=c(5,10)}, the algorithm wil be lauched 5 times, doing each time 10 iterations; finally the algorithm will begin with the initialization that maximizes the log-likelihood.}
 
 \item{scaling}{Logical: whether to scale the dataset (mean=0 and standard-error=1 for each variable) or not. By default the data is not scaled.}
 
-\item{min.individuals}{This parameter is used to control for the minimum population of a class. If the population of a class becomes stricly inferior to 'min.individuals' then the algorithm stops and gives the message: 'pop<min.indiv.'. Here the meaning of "population of a class" is the sum of its posterior probabilities. The value of 'min.individuals' cannot be lower than 2.}
+\item{min.individuals}{Positive integer greater than 2 (default). This parameter is used to control for the minimum population of a class. If the population of a class becomes stricly inferior to 'min.individuals' then the algorithm stops and gives the message: 'pop<min.indiv.'. Here the meaning of "population of a class" is the sum of its posterior probabilities. The value of 'min.individuals' cannot be lower than 2.}
 
 \item{noise.ctrl}{This parameter avoids to have a too low value of the 'noise' parameter b. It garantees that the dimension selection process do not select too many dimensions (which leads to a potential too low value of the noise parameter b). When selecting the intrinsic dimensions using Cattell's scree-test or BIC, the function doesn't use the eigenvalues inferior to noise.ctrl, so that the intrinsic dimensions selected can't be higher or equal to the order of these eigenvalues.}
 
-\item{mc.cores}{Positive integer, default is 1. If \code{mc.cores>1}, then parallel computing is used, using \code{mc.cores} cores. Warning for Windows users only: the parallel computing can sometimes be slower than using one single core (due to how parLapply works).}
+\item{mc.cores}{Positive integer, default is 1. If \code{mc.cores>1}, then parallel computing is used, using \code{mc.cores} cores. Warning for Windows users only: the parallel computing can sometimes be slower than using one single core (due to how \code{\link[parallel]{parLapply}} works).}
 
 \item{nb.rep}{A positive integer (default is 1). Each estimation (i.e. combination of (model, K, threshold)) is repeated \code{nb.rep} times and only the estimation with the highest log-likelihood is kept.}
 
@@ -54,7 +54,9 @@ hddc(data, K = 1:10, model = c("AkjBkQkDk"), threshold = 0.2,
 
 \item{kmeans.control}{A list. The elements of this list should match the parameters of the kmeans initialization (see \code{\link[stats]{kmeans}} help for details). The parameters are \dQuote{iter.max}, \dQuote{nstart} and \dQuote{algorithm}.}
 
-\item{d_max}{A positive integer. The maximum number of dimensions to be computed. Default is 100. It means that the instrinsic dimension of any cluster cannot be larger than \code{dmax}. It quickens a lot the algorithm for datasets with a large number of variables (e.g. thousands).}
+\item{d_max}{A positive integer. The maximum number of dimensions to be computed. Default is 100. It means that the instrinsic dimension of any cluster cannot be larger than \code{d_max}. It quickens a lot the algorithm for datasets with a large number of variables (e.g. thousands).}
+
+\item{subset}{An positive integer, default is \code{Inf}. In case of large data sets it might be useful to perform HDDC on a subsample of the data: this is the use of this argument. If \code{subset} is to a value smaller than the number of observations of the dataset then: HDDC is performed on a random subsample of size \code{subset} and once a clustering is obtained on this subsample, the posterior of the clustering is computed on the full sample.}
 
 \item{d}{DEPRECATED. This parameter is kept for retro compatibility. Now please use the parameter d_select.}
 }
@@ -70,7 +72,7 @@ hddc returns an 'hdc' object; it's a list containing:
 \item{ ev }{The eigen values of the var/covar matrix.}
 \item{ Q }{The orthogonal matrix of orientation of each class.}
 \item{ loglik }{The log-likelihood.}
-\item{ loglik_all }{The log-likelihood of all iterations.}
+\item{ loglik_all }{The log-likelihood of all iterations. Note that if \code{subset} was used, then this vector represents the likelihoods evaluations for the subsample on which HDDC was performed (i.e. not the likelihood for the full dataset -- so these values are smaller than the on given in \sQuote{loglik} which concerns the whole sample after the estimation).}
 \item{ posterior }{The matrix of the probabilities to belong to a class for each observation and each class.}
 \item{ class }{The class vector obtained by the clustering.}
 \item{ com_ev }{Only if this is a common dimension model. The eigenvalues of the var/covar matrix of the whole dataset.}
@@ -82,10 +84,10 @@ hddc returns an 'hdc' object; it's a list containing:
 \item{ ICL }{The ICL of the model.}
 \item{ criterion }{The criterion used to select the model.}
 \item{ call }{The call.}
-\item{ complexity_allModels }{The number of parameters for all the models that were run (used to compute the slope heuristic).}
-\item{ allCriteria }{The data.frame with the combination (model, K, threshold) and the associated values of the likelihood (LL), BIC and ICL, as well as the rank of each of the models with respect to the selection criterion.}
+\item{ allCriteria }{The data.frame with the combination (model, K, threshold) and the associated values of the likelihood (LL), BIC and ICL, as well as the rank of each of the models with respect to the selection criterion. It also reports the original order in which were estimated the models as well as each model complexity}
 \item{ all_results }{Only if \code{keepAllRes=TRUE}. The parameters of all estimations that were run.}
 \item{ scaling }{Only if \code{scaling=TRUE}. The centers and the standard deviation of the original dataset.}
+\item{ id_subset }{Only if \code{subset} is used. The observation IDs of the subsample on which the HDDC parameters were estimated.}
 }
 \description{
 HDDC is a model-based clustering method. It is based on the Gaussian Mixture Model and on the idea that the data lives in subspaces with a lower dimension than the dimension of the original space. It uses the Expectation - Maximisation algorithm to estimate the parameters of the model.
@@ -135,7 +137,7 @@ ABQkDk \tab   6   \tab  \tab  ABQkD \tab   12  \cr
 AjBQD \tab 13 \tab  \tab ABQD \tab 14
 }
 
-The parameter d, is used to select the intrinsic dimensions of the subclasses. Here are his definictions:
+The parameter \code{d_select}, is used to select the intrinsic dimensions of the subclasses. Here are its definitions:
 		\itemize{
 			\item{\dQuote{Cattell}:}{
 				The Cattell's scree-test is used to gather the intrinsic dimension of each class. If the model is of common dimension (models 7 to 14), the scree-test is done on the covariance matrix of the whole dataset.
@@ -205,9 +207,19 @@ res4 <- predict(prms4, Crabs[,-1], Crabs[,1])
 prms5 <- hddc(Crabs[,-1], K=1:8, model=c(1,2,7,9), mc.cores=2)
 }
 
+# LARGE DATASETS
+# Assume you have a very large data set 
+# => you can use the argument 'subset' to obtain quick results:
+\dontrun{
+# we take a subset of 10000 observations and run hddc
+# once the classification is done, the posterior is computed 
+# on the full data
+prms = hddc(bigData, subset = 10000)
+# You obtain a (much faster) classification of the full dataset:
+table(prms$class)
 }
-\author{
-Laurent Berge, Charles Bouveyron and Stephane Girard
+
+
 }
 \references{
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
@@ -217,7 +229,9 @@ Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package fo
 \seealso{
 \code{\link{hdda}}, \code{\link{predict.hdc}}, \code{\link{plot.hdc}}.
 }
+\author{
+Laurent Berge, Charles Bouveyron and Stephane Girard
+}
 \concept{
 clustering
 }
-

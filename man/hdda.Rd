@@ -22,9 +22,9 @@ hdda(data, cls, model = "AkjBkQkDk", graph = FALSE, d_select = "Cattell",
 
 \item{threshold}{A float stricly within 0 and 1. It is the threshold used in the Cattell's Scree-Test.}
 
-\item{com_dim}{It is used only for common dimensions models. The user can give the common dimension he wants. If used, it must be an integer. Its default is set to NULL.}
+\item{com_dim}{It is used only for common dimensions models. The user can give the common dimension s/he wants. If used, it must be an integer. Its default is set to NULL.}
 
-\item{show}{Use show = FALSE to settle off the informations that may be printed.}
+\item{show}{Use \code{show = FALSE} to settle off the informations that may be printed. Default is TRUE.}
 
 \item{scaling}{Logical: whether to scale the dataset (mean=0 and standard-error=1 for each variable) or not. By default the data is not scaled.}
 
@@ -158,9 +158,6 @@ prms4 = hdda(a, z, LOO=TRUE, scaling=TRUE)
 sum(prms4$class==z) / length(z)
 
 }
-\author{
-Laurent Berge, Charles Bouveyron and Stephane Girard
-}
 \references{
 Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discriminant Analysis}, \emph{Communications in Statistics: Theory and Methods}, vol. \bold{36} (14), pp. 2607--2623
 
@@ -171,4 +168,6 @@ Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package fo
 \seealso{
 \code{\link{hddc}}, \code{\link{predict.hdc}}, \code{\link{plot.hdc}}
 }
-
+\author{
+Laurent Berge, Charles Bouveyron and Stephane Girard
+}

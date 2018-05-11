@@ -1,5 +1,6 @@
 
-
+# TODO
+# hdclassif_dim_choice => treat the case of cattell scree test with 2 EV
 
 hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 	# Selection of the intrinsic dimension 
@@ -8,9 +9,13 @@ hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 	prop <- n/N
 	K = ifelse(is.matrix(ev), nrow(ev), 1)
 	
-	# browser()
+	# TODO
+	# browser() # treat the case of cattell scree test with 2 EV
 	
-	if(is.matrix(ev) && K>1){
+	if(is.matrix(ev) && ncol(ev) <= 2){
+		# d can be only equal to 1 if there are only 2 eigenvalues
+		d = rep(1, K)
+	} else if(is.matrix(ev) && K>1){
 		p <- ncol(ev)
 		if(method=="cattell"){
 			dev <- abs(apply(ev, 1, diff))
@@ -63,15 +68,22 @@ hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 			}
 			if(graph) par(op)
 		}
-	} else{
+	} else if(length(ev) <= 2){
+		# idem, the number of intrinsic dimensions cannot be larger than 1 in the case of 2 eigenvalues
+		d = 1
+	} else {
 		ev <- as.vector(ev)
 		p <- length(ev)
 		
-		if(method=="cattell"){
+		if(method == "cattell"){
 			dvp <- abs(diff(ev))
 			Nmax <- max(which(ev>noise.ctrl))-1
-			if (p==2) d <- 1
-			else d <- max(which(dvp[1:Nmax]>=threshold*max(dvp[1:Nmax])))
+			if (p==2){
+				d <- 1
+			} else {
+				d <- max(which(dvp[1:Nmax]>=threshold*max(dvp[1:Nmax])))
+			} 
+			
 			diff_max <- max(dvp[1:Nmax])
 			
 			if(graph){
@@ -105,6 +117,7 @@ hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 			}
 		}
 	}
+	
 	return(d)
 }
 
@@ -125,9 +138,14 @@ hdclassif_bic <- function(par, p, data=NULL){
 		b <- b*(n_max-eps)/(p-eps)
 		b <- rep(b, length=K)
 	}	
-	if (length(a)==1) a <- matrix(a, K, max(d))
-	else if (length(a)==K) a <- matrix(a, K, max(d))
-	else if (model=='AJBQD') a <- matrix(a, K, d[1], byrow=TRUE)
+	
+	if (length(a)==1){
+		a <- matrix(a, K, max(d))
+	} else if (length(a)==K) {
+		a <- matrix(a, K, max(d))
+	} else if (model=='AJBQD') {
+		a <- matrix(a, K, d[1], byrow=TRUE)
+	}
 	
 	if(min(a, na.rm=TRUE)<=0 | any(b<0)) return(-Inf)
 	
@@ -231,6 +249,8 @@ simuldata <- function(nlearn, ntest, p, K=3, prop=NULL, d=NULL, a=NULL, b=NULL){
 }
 
 hdc_getComplexity = function(par, p){
+	# Simple function to abtain the number of parameters of the models
+	
 	model <- par$model
 	K <- par$K
 	d <- par$d
@@ -308,11 +328,21 @@ hdc_getTheModel = function(model, all2models = FALSE){
 
 # We create a custom function to compute the eigen decomposition
 hdc_myEigen = function(x, k, only.values=FALSE){
+	
 	if(k == ncol(x)){
 		res = eigen(x, symmetric = TRUE, only.values = only.values)
+	} else if (ncol(x) < 3){
+		# The function eigs_sym can be used only for dataset with more than 3 vars
+		res = eigen(x, symmetric = TRUE, only.values = only.values)
+		# we put it in the right dimension
+		res$values = res$values[1:k]
+		if(!only.values){
+			res$vector = res$vector[, 1:k]
+		}
 	} else {
 		res = rARPACK::eigs_sym(x, k)
 	}
+	
 	res
 }
 
@@ -377,6 +407,74 @@ plot.hdc <- function(x, method=NULL, threshold=NULL, noise.ctrl=1e-8, ...){
 	else d <- hdclassif_dim_choice(x$com_ev, n, method, threshold, TRUE, noise.ctrl)
 }
 
+
+
+#' Prediction method for \sQuote{hdc} class objects.
+#' 
+#' This function computes the class prediction of a dataset with respect to the model-based supervised and unsupervised classification methods \code{\link{hdda}} and \code{\link{hddc}}.
+#' 
+#' @method predict hdc
+#'
+#' @param object An \sQuote{hdc} class object obtained by using \code{\link{hdda}} or \code{\link{hddc}} function.
+#' @param data A matrix or a data frame of observations, assuming the rows are the observations and the columns the variables. The data should be in the exact same format as the one that trained the model. Note that NAs are not allowed. 
+#' @param cls A vector of the thue classes of each observation. It is optional and used to be compared to the predicted classes, default is NULL.
+#' @param ... Not currently used.
+#'
+#' @return
+#' \item{class}{vector of the predicted class.}
+#' \item{prob}{The matrix of the probabilities to belong to a class for each observation and each class.}
+#' \item{loglik}{The likelihood of the classification on the new data.}
+#' If the initial class vector is given to the argument \sQuote{cls} then the adjusted rand index (ARI) is also returned. Also the following object is returned:
+#' 	\item{ARI}{The confusion matrix of the classification.}
+#'
+#' @references 
+#'Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High Dimensional Discriminant Analysis}, \emph{Communications in Statistics: Theory and Methods}, vol. \bold{36} (14), pp. 2607--2623
+#'
+#'Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
+#'
+#'Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
+#'
+#' @author
+#'Laurent Berge, Charles Bouveyron and Stephane Girard
+#'
+#'
+#' @seealso
+#' The functions to do high dimensional classification \code{\link{hdda}} or clustering \code{\link{hddc}}.
+#' 
+#' @keywords hddc hdda clustering
+#'
+#' @examples
+#'# Example 1:
+#'data <- simuldata(1000, 1000, 50)
+#'X <- data$X
+#'clx <- data$clx
+#'Y <- data$Y
+#'cly <- data$cly
+#'
+#'#clustering of the gaussian dataset:
+#'prms1 <- hddc(X, K=3, algo="CEM", init='param')      
+#'           
+#'#class vector obtained by the clustering:
+#'prms1$class                   
+#'
+#'# only to see the good classification rate and 
+#'# the Adjusted Rand Index:                     
+#'res1 <- predict(prms1, X, clx)                                            
+#'res2 <- predict(prms1, Y)       
+#'
+#'#the class predicted using hddc parameters on the test dataset:  
+#'res2$class                                                           
+#'
+#'
+#'# Example 2:
+#'data(Crabs)
+#'#clustering of the Crabs dataset:
+#'prms3 <- hddc(Crabs[,-1], K=4, algo="EM", init='kmeans')        
+#'res3 <- predict(prms3, Crabs[,-1], Crabs[,1])
+#' 
+#' 
+#' 
+#' 
 predict.hdc <- function(object, data, cls=NULL, ...){
 	#Extract variables:
 	p <- ncol(data)
@@ -402,18 +500,29 @@ predict.hdc <- function(object, data, cls=NULL, ...){
 		x <- scale(x, center=object$scaling$mu, scale=object$scaling$sd)
 	}
 	
-	if(length(b)==1) b <- rep(b, length=K)
-	if (length(a)==1) a <- matrix(a, K, max(d))
-	else if (length(a)==K) a <- matrix(a, K, max(d))
-	else if (object$model=='AJBQD') a <- matrix(a, K, d[1], byrow=TRUE)
+	if(length(b)==1){
+		b <- rep(b, length=K)
+	}
+	
+	if(length(a) == 1){
+		a <- matrix(a, K, max(d))
+	} else if(length(a) == K){
+		a <- matrix(a, K, max(d))
+	} else if(object$model == 'AJBQD'){
+		a <- matrix(a, K, d[1], byrow=TRUE)
+	}
 	
 	if(min(a, na.rm=TRUE)<=0 | min(b)<=0) stop("Some parameters A or B are negative. Prediction can't be done.\nThe reduction of the intrinsic dimensions or a more constrained model can be a solution.\nAlso, you can change the value of A's and B's manually by accessing the paramaters (though not recommended).\n", call.=FALSE)
 	
 	
 	if(object$model=="AJBQD") {
+		
 		K_pen <- diag((mu%*%Q%*%diag(1/a[1, 1:d[1]], d[1]))%*%(t(Q)%*%t(mu)))-2*(mu%*%Q%*%diag(1/a[1, 1:d[1]], d[1]))%*%(t(Q)%*%t(x))+1/b[1]*(diag(tcrossprod(mu))-2*mu%*%t(x)+2*(mu%*%Q)%*%(t(Q)%*%t(x))-diag(tcrossprod(mu%*%Q)))-2*log(c(prop))
+		
 	} else if (object$model=="ABQD") {
+		
 		K_pen <- diag(1/a[1]*(mu%*%Q)%*%(t(Q)%*%t(mu)))+1/b[1]*(diag(tcrossprod(mu))-2*mu%*%t(x)-diag(tcrossprod(mu%*%Q)))-2*log(c(prop))+2*(1/b[1]-1/a[1])*(mu%*%Q)%*%(t(Q)%*%t(x))
+		
 	} else {
 		K_pen <- matrix(0, K, N)
 		for (i in 1:K) {
@@ -422,9 +531,14 @@ predict.hdc <- function(object, data, cls=NULL, ...){
 			proj <- (X%*%Q[[i]])%*%t(Q[[i]])
 			A <- (-proj)%*%Q[[i]]%*%sqrt(diag(1/a[i, 1:d[i]], d[i]))
 			B <- X-proj
-			K_pen[i, ] <- rowSums(A^2)+1/b[i]*rowSums(B^2)+s+(p-d[i])*log(b[i])-2*log(prop[i])
+			K_pen[i, ] <- rowSums(A^2)+1/b[i]*rowSums(B^2)+s+(p-d[i])*log(b[i])-2*log(prop[i])+p*log(2*pi)
 		}
 	}
+	
+	# The likelihood
+	A <- -1/2*t(K_pen)
+	A_max = apply(A, 1, max)
+	loglik <- sum(log(rowSums(exp(A-A_max)))+A_max)
 	
 	t <- matrix(0, N, K, dimnames=list(1:N, 1:K))
 	for (i in 1:K) t[, i] <- 1/rowSums(exp((K_pen[i, ]-t(K_pen))/2))
@@ -434,6 +548,7 @@ predict.hdc <- function(object, data, cls=NULL, ...){
 		result <- factor(result, labels=object$kname, levels=seq_along(object$kname))
 		colnames(t) <- object$kname
 	}
+	
 	if (!is.null(cls)){
 		if(is.null(object$kname)){
 			ARI <- hddc_ari(cls, result)
@@ -446,8 +561,10 @@ predict.hdc <- function(object, data, cls=NULL, ...){
 			print(confusion)
 		}
 	}
+	
 	class(t) <- 'hd'
-	list(class=result, posterior=t, confusion=confusion, ARI=ARI)
+	
+	list(class = result, posterior=t, loglik = loglik, confusion = confusion, ARI = ARI)
 }
 
 print.hd <- function(x, ...){

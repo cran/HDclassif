@@ -12,8 +12,8 @@ Disciminant analysis and data clustering methods for high dimensional data, base
 \tabular{ll}{
 Package: \tab HDclassif\cr
 Type: \tab Package\cr
-Version: \tab 2.0.2\cr
-Date: \tab 2016-12-20\cr
+Version: \tab 2.1.0\cr
+Date: \tab 2018-05-11\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
