@@ -142,7 +142,7 @@
 #' prms4 = hdda(a, z, LOO=TRUE, scaling=TRUE)
 #' sum(prms4$class==z) / length(z)
 #' 
-hdda <- function(data, cls, model='AkjBkQkDk', graph=FALSE, d_select="Cattell", threshold=0.2, com_dim=NULL, show=TRUE, scaling=FALSE, cv.dim=1:10, cv.threshold=c(.001, .005, .05, 1:9*0.1), cv.vfold=10, LOO=FALSE, noise.ctrl=1e-8, d){
+hdda <- function(data, cls, model='AkjBkQkDk', graph=FALSE, d_select="Cattell", threshold=0.2, com_dim=NULL, show=getHDclassif.show(), scaling=FALSE, cv.dim=1:10, cv.threshold=c(.001, .005, .05, 1:9*0.1), cv.vfold=10, LOO=FALSE, noise.ctrl=1e-8, d){
 	
 	# For compatibility with old versions of HDclassif
 	if(!missing(d) & missing(d_select)) d_select = d

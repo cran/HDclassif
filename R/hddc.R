@@ -11,12 +11,12 @@
 #' @param criterion Either \dQuote{BIC} or \dQuote{ICL}. If several models are run, the best model is selected using the criterion defined by \code{criterion}.
 #' @param com_dim It is used only for common dimensions models. The user can give the common dimension s/he wants. If used, it must be an integer. Its default is set to NULL.
 #' @param itermax The maximum number of iterations allowed. The default is 200.
-#' @param eps A positive double, default is 0.001. It is the stopping criterion: the algorithm stops when the difference between two successive log-likelihoods is lower than \sQuote{eps}.
+#' @param eps A positive double, default is 0.001. It is the stopping criterion: the algorithm stops when the difference between two successive log-likelihoods is lower than \code{eps}.
 #' @param algo A character string indicating the algorithm to be used. The available algorithms are the Expectation-Maximisation ("EM"), the Classification E-M ("CEM") and the Stochastic E-M ("SEM"). The default algorithm is the "EM".
 #' @param d_select Either \dQuote{Cattell} (default) or \dQuote{BIC}. See details for more information. This parameter selects which method to use to select the intrinsic dimensions.
 #' @param init A character string or a vector of clusters. It is the way to initialize the E-M algorithm. There are five possible initialization: \dQuote{kmeans} (default), \dQuote{param}, \dQuote{random}, \dQuote{mini-em} or \dQuote{vector}. See details for more information. It can also be directly initialized with a vector containing the prior classes of the observations. If \code{init = "vector"}, then you should add the argument \code{init.vector}.
 #' @param init.vector A vector of integers or factors. It is a user-given initialization. It should be of the same length as of the data. Only used when \code{init = "vector"}.
-#' @param show Use \code{show = FALSE} to settle off the informations that may be printed. Default is TRUE.
+#' @param show Single logical. To diplay summary information on the results after the algorithm is done: set it to \code{TRUE}. By default it takes the value of \code{\link[HDclassif]{getHDclassif.show}} which is FALSE at the loading of the package. To permanently have \code{show=TRUE}, use \code{setHDclassif.show(TRUE)}.
 #' @param mini.nb A vector of integers of length two. This parameter is used in the \dQuote{mini-em} initialization. The first integer sets how many times the algorithm is repeated; the second sets the maximum number of iterations the algorithm will do each time. For example, if \code{init="mini-em"} and \code{mini.nb=c(5,10)}, the algorithm wil be lauched 5 times, doing each time 10 iterations; finally the algorithm will begin with the initialization that maximizes the log-likelihood. 
 #' @param scaling Logical: whether to scale the dataset (mean=0 and standard-error=1 for each variable) or not. By default the data is not scaled.
 #' @param min.individuals Positive integer greater than 2 (default). This parameter is used to control for the minimum population of a class. If the population of a class becomes stricly inferior to 'min.individuals' then the algorithm stops and gives the message: 'pop<min.indiv.'. Here the meaning of "population of a class" is the sum of its posterior probabilities. The value of 'min.individuals' cannot be lower than 2.
@@ -202,7 +202,7 @@
 #' }
 #' 
 #' 
-hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="bic", com_dim=NULL, itermax=200, eps=1e-3, algo='EM', d_select="Cattell", init='kmeans', init.vector, show=TRUE, mini.nb=c(5, 10), scaling=FALSE, min.individuals=2, noise.ctrl=1e-8, mc.cores=1, nb.rep=1, keepAllRes=TRUE, kmeans.control = list(), d_max=100, subset=Inf, d){
+hddc  <- function(data, K=1:10, model=c("AkjBkQkDk"), threshold=0.2, criterion="bic", com_dim=NULL, itermax=200, eps=1e-3, algo='EM', d_select="Cattell", init='kmeans', init.vector, show=getHDclassif.show(), mini.nb=c(5, 10), scaling=FALSE, min.individuals=2, noise.ctrl=1e-8, mc.cores=1, nb.rep=1, keepAllRes=TRUE, kmeans.control = list(), d_max=100, subset=Inf, d){
 	
 	# For compatibility with old versions of HDclassif
 	if(!missing(d) & missing(d_select)) d_select = d
@@ -549,8 +549,9 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 	
 	likely <- c()
 	iter <- 0
-	test <- Inf
-	while ((iter <- iter+1)<=itermax && test>=eps){
+	converged = FALSE
+	IS_ALTERNATION = FALSE
+	while ((iter <- iter+1)<=itermax && !converged){
 		
 		if (algo!='EM' && iter!=1) t <- t2
 		
@@ -580,7 +581,36 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 		}
 		
 		likely[iter] <- L
-		if (iter!=1) test <- abs(likely[iter]-likely[iter-1])
+		if (iter!=1){
+			abs_diff <- abs(L - likely[iter-1])
+			if((abs_diff < eps) || (abs_diff/(0.1 + abs(L)) < eps)){
+				# convergence
+				converged = TRUE
+			}
+		}
+		
+		if(IS_ALTERNATION){
+			break
+		}
+		
+		# ALTERNATION CATCHING
+		if(iter > 20 && !converged){
+			abs_diff_1 <- abs(L - likely[iter - 2])
+			if((abs_diff_1 < eps) || (abs_diff_1/(0.1 + abs(L)) < eps)){
+				
+				L_m1 = likely[iter - 1]
+				abs_diff_2 <- abs(L_m1 == likely[iter - 3])
+				if((abs_diff_2 < eps) || (abs_diff_2/(0.1 + abs(L_m1)) < eps)){
+					attr(converged, "reason") = "Alternation"
+					if(L < L_m1){
+						# we carry on to get the highest LL
+						IS_ALTERNATION = TRUE
+					} else {
+						break
+					}
+				}
+			}
+		}
 		
 		if(debug){
 			print("d=")
@@ -595,7 +625,7 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 	
 	# Warning message ITERATIONS
 	if(iter >= itermax && itermax != mini.nb[2]){
-		warning("Maximum iterations reached (", itermax, ").")
+		warning("Maximum iterations reached (", itermax, "). Increase 'itermax'? It may be worth to plot the evolution of the log-likelihood (element loglik_all).")
 	}
 	
 	# We retrieve the parameters
@@ -623,7 +653,6 @@ hddc_main <- function(DATA, K, model, threshold, method, algo, itermax, eps, ini
 	complexity <- hdc_getComplexity(m, p)
 	class(b) <- class(a) <- class(d) <- class(prop) <- class(mu) <- 'hd'
 	cls <- max.col(t)
-	converged = test<eps
 	
 	params = list(model=model, K=K, d=d, a=a, b=b, mu=mu, prop=prop, ev=m$ev, Q=m$Q, loglik=likely[length(likely)], loglik_all = likely, posterior=t, class=cls, com_ev=com_ev, N=N, complexity=complexity, threshold=threshold, d_select=method, converged=converged, iterations=iter-1)
 	

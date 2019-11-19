@@ -3,6 +3,25 @@
 
 \title{News for \R Package \pkg{HDclassif}}
 
+\section{Changes in version 2.2.0}{
+	\subsection{User visible changes}{
+		\itemize{
+			\item New default for the argument 'show' in functions \code{hdda} and \code{hddc}. Now 'show' is set to the value of \code{getHDclassif.show()} which is \code{FALSE} at package loading. To set the value of 'show' permanently, use the new function \code{setHDclassif.show}.
+			\item More explicit warnings when the maximum number of iterations is reached in HDDC.
+			\item Convergence criterion in HDDC modified to accomodate large numbers.
+			\item Algorithm now stops when there is log-likelihood alternation.
+		}
+	}
+
+	\subsection{Bug Fix}{
+		\itemize{
+			\item[hdclassif_dim_choice (thanks to Zhenfeng He)] Bug in finding the intrisic dimension with the BIC method could occur when **all** eigenvalues are smaller than 1e-8 (value of noise.ctrl). Now corrected.
+			\item[plot.hdc] plot method when selection has been made with the BIC criterion now works appropriately.
+			\item[plot.hdc] Now graphical parameters are reset at the end of the plot even in case of an interruption.
+		}
+	}
+}
+
 \section{Changes in version 2.1.0 2018-05-10}{
 	\subsection{Major Bug Fix}{
 		\itemize{

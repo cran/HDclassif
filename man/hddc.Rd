@@ -7,9 +7,10 @@
 hddc(data, K = 1:10, model = c("AkjBkQkDk"), threshold = 0.2,
   criterion = "bic", com_dim = NULL, itermax = 200, eps = 0.001,
   algo = "EM", d_select = "Cattell", init = "kmeans", init.vector,
-  show = TRUE, mini.nb = c(5, 10), scaling = FALSE, min.individuals = 2,
-  noise.ctrl = 1e-08, mc.cores = 1, nb.rep = 1, keepAllRes = TRUE,
-  kmeans.control = list(), d_max = 100, subset = Inf, d)
+  show = getHDclassif.show(), mini.nb = c(5, 10), scaling = FALSE,
+  min.individuals = 2, noise.ctrl = 1e-08, mc.cores = 1,
+  nb.rep = 1, keepAllRes = TRUE, kmeans.control = list(),
+  d_max = 100, subset = Inf, d)
 }
 \arguments{
 \item{data}{A matrix or a data frame of observations, assuming the rows are the observations and the columns the variables. Note that NAs are not allowed.}
@@ -36,7 +37,7 @@ hddc(data, K = 1:10, model = c("AkjBkQkDk"), threshold = 0.2,
 
 \item{init.vector}{A vector of integers or factors. It is a user-given initialization. It should be of the same length as of the data. Only used when \code{init = "vector"}.}
 
-\item{show}{Use \code{show = FALSE} to settle off the informations that may be printed. Default is TRUE.}
+\item{show}{Single logical. To diplay summary information on the results after the algorithm is done: set it to \code{TRUE}. By default it takes the value of \code{\link[HDclassif]{getHDclassif.show}} which is FALSE at the loading of the package. To permanently have \code{show=TRUE}, use \code{setHDclassif.show(TRUE)}.}
 
 \item{mini.nb}{A vector of integers of length two. This parameter is used in the \dQuote{mini-em} initialization. The first integer sets how many times the algorithm is repeated; the second sets the maximum number of iterations the algorithm will do each time. For example, if \code{init="mini-em"} and \code{mini.nb=c(5,10)}, the algorithm wil be lauched 5 times, doing each time 10 iterations; finally the algorithm will begin with the initialization that maximizes the log-likelihood.}
 
@@ -215,7 +216,8 @@ prms5 <- hddc(Crabs[,-1], K=1:8, model=c(1,2,7,9), mc.cores=2)
 # once the classification is done, the posterior is computed 
 # on the full data
 prms = hddc(bigData, subset = 10000)
-# You obtain a (much faster) classification of the full dataset:
+# You obtain a much faster (although less precise) 
+# classification of the full dataset:
 table(prms$class)
 }
 
@@ -232,6 +234,4 @@ Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package fo
 \author{
 Laurent Berge, Charles Bouveyron and Stephane Girard
 }
-\concept{
-clustering
-}
+\concept{clustering}

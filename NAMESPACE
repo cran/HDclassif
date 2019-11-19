@@ -7,6 +7,7 @@ importFrom(grDevices, devAskNewPage)
 importFrom(rARPACK, eigs_sym)
 
 export(hdda, hddc, hdmda, simuldata, demo_hddc, slopeHeuristic)
+export(setHDclassif.show, getHDclassif.show)
 
 S3method(predict, hdc)
 S3method(predict, hdmda)

@@ -4,13 +4,18 @@
 
 hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 	# Selection of the intrinsic dimension 
-	# browser()
+	
 	N <- sum(n)
 	prop <- n/N
 	K = ifelse(is.matrix(ev), nrow(ev), 1)
 	
 	# TODO
-	# browser() # treat the case of cattell scree test with 2 EV
+	# treat the case of cattell scree test with 2 EV
+	
+	if(graph){
+		op = par(mfrow=c(K*(K<=3)+2*(K==4)+3*(K>4 && K<=9)+4*(K>9), 1+floor(K/4)-1*(K==12)+1*(K==7)))
+		on.exit(par(op))
+	}
 	
 	if(is.matrix(ev) && ncol(ev) <= 2){
 		# d can be only equal to 1 if there are only 2 eigenvalues
@@ -24,9 +29,10 @@ hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 			d <- apply((dev>threshold)*(1:(p-1))*t(ev[, -1]>noise.ctrl), 2, which.max)
 			
 			if(graph){
-				op = par(mfrow=c(K*(K<=3)+2*(K==4)+3*(K>4 && K<=9)+4*(K>9), 1+floor(K/4)-1*(K==12)+1*(K==7)))
+				
 				for(i in 1:K){
 					sub1 <- paste("Class #", i, ",  d", i, "=", d[i], sep="")
+					
 					Nmax <- max(which(ev[i, ]>noise.ctrl))-1
 					plot(dev[1:(min(d[i]+5, Nmax)), i], type="l", col="blue", main=paste("Cattell's Scree-Test\n", sub1, sep=""), ylab=paste("threshold =", threshold), xlab="Dimension", ylim=c(0, 1.05))
 					abline(h=threshold, lty=3) 	
@@ -34,14 +40,14 @@ hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 				}
 				par(op)
 			}
-		} else if(method=="bic"){
+		} else if(method == "bic"){
 			
 			d <- rep(0, K)
-			if(graph) op = par(mfrow=c(K*(K<=3)+2*(K==4)+3*(K>4 && K<=9)+4*(K>9), 1*(1+floor(K/4)-1*(K==12)+1*(K==7))))
 			
 			for (i in 1:K) {
 				B <- c()
-				Nmax <- max(which(ev[i, ]>noise.ctrl))-1
+				
+				Nmax <- max(max(which(ev[i, ]>noise.ctrl))-1, 1)
 				p2 <- sum(!is.na(ev[i, ]))
 				Bmax <- -Inf
 				for (kdim in 1:Nmax){
@@ -62,11 +68,29 @@ hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 				}
 				
 				if(graph){
+					
+					if(Nmax == 1){
+						# we add some values
+						ev_keep = ev[i, ][ev[i, ] > 0]
+						p2 = length(ev_keep)
+						for(kdim in 1:(min(10, length(ev_keep)))){
+							a <- sum(ev[i, 1:kdim])/kdim
+							b <- sum(ev[i, (kdim+1):p2])/(p2-kdim)
+							if (b<0 | a<0){
+								break
+								B[kdim] <- -Inf
+							} else {
+								L2 <- -1/2*(kdim*log(a)+(p2-kdim)*log(b)-2*log(prop[i])+p2*(1+1/2*log(2*pi))) * n[i]
+								B[kdim] <- 2*L2 - (p2+kdim*(p2-(kdim+1)/2)+1) * log(n[i])
+							}
+						}
+						
+					}
+					
 					plot(B, type='l', col=4, main=paste("class #", i, ",  d=", d[i], sep=''), ylab='BIC', xlab="Dimension")
 					points(d[i], B[d[i]], col=2)
 				}
 			}
-			if(graph) par(op)
 		}
 	} else if(length(ev) <= 2){
 		# idem, the number of intrinsic dimensions cannot be larger than 1 in the case of 2 eigenvalues
@@ -91,20 +115,24 @@ hdclassif_dim_choice <- function(ev, n, method, threshold, graph, noise.ctrl){
 				abline(h=threshold, lty=3)	
 				points(d, dvp[d]/diff_max, col='red')
 			}
-		} else if(method=="bic"){
+		} else if(method == "bic"){
 			d <- 0
-			Nmax <- max(which(ev>noise.ctrl))-1
+			Nmax <- max(max(which(ev>noise.ctrl))-1, 1)
 			B <- c()
 			Bmax <- -Inf
 			for (kdim in 1:Nmax){
+				
 				if (d!=0 && kdim>d+10) break
+				
 				a <- sum(ev[1:kdim])/kdim
 				b <- sum(ev[(kdim+1):p])/(p-kdim)
-				if (b<=0 | a<=0) B[kdim] <- -Inf
-				else{
+				if (b<=0 | a<=0){
+					B[kdim] <- -Inf
+				} else{
 					L2 <- -1/2*(kdim*log(a)+(p-kdim)*log(b)+p*(1+1/2*log(2*pi)))*N
 					B[kdim] <- 2*L2 - (p+kdim*(p-(kdim+1)/2)+1)*log(N)
 				}
+				
 				if ( B[kdim]>Bmax ){
 					Bmax <- B[kdim]
 					d <- kdim
@@ -390,14 +418,14 @@ plot.hdc <- function(x, method=NULL, threshold=NULL, noise.ctrl=1e-8, ...){
 	if(!is.null(method)){
 		method = myAlerts(method, "method", "singleCharacterMatch.arg", "HDDC: ", c("cattell", "bic"))
 	} else {
-		if(!is.null(x$threshold)){
+		if(!is.null(x$threshold) && is.numeric(threshold)){
 			method = "cattell"
 		} else {
 			method = "bic"
 		}
 	}
 	
-	threshold <- if(!is.null(threshold)) threshold else if(!is.null(x$threshold)) x$threshold else 0.2
+	threshold <- if(!is.null(threshold)) threshold else if(!is.null(x$threshold) && is.numeric(threshold)) x$threshold else 0.2
 	
 	k <- x$K
 	N <- x$N
@@ -612,7 +640,6 @@ print.hdc <- function(x, ...){
 # 			return(NULL)
 # 		}
 # 	}
-# 	# browser()
 # 	class(x) = "list"
 # 	res = x[[y]]
 # 	res$data = x$data
@@ -710,5 +737,66 @@ HDC_plot_criteria = function(res){
 	}
 	
 }
+
+
+
+####
+#### Setters/Getters ####
+####
+
+#' Sets/gets the default 'show' argument in HDDC and HDDA
+#'
+#' Sets/gets the default value for 'show' argument in HDDC and HDDC. When \code{TRUE} then clustering information is returned at the end of the process. 
+#'
+#' @param show Single logical with default. Will specify the default value of the \code{show} argument in HDDA and HDDC.
+#'
+#'
+#' @return
+#' \code{getHDclassif.show} returns the default value.
+#'
+#' @examples
+#'
+#' data(Crabs)
+#' 
+#' # clustering of the Crabs dataset:
+#' prms <- hddc(Crabs[,-1], K=4)  
+#' # By default no information is displayed
+#' 
+#' # To show information:
+#' prms <- hddc(Crabs[,-1], K=4, show = TRUE)  
+#' 
+#' # To set it permanently:
+#' setHDclassif.show(TRUE)
+#' prms <- hddc(Crabs[,-1], K=4)  
+#' 
+#' # to disable it permanently:
+#' setHDclassif.show(FALSE)
+#' 
+#' 
+#'
+#'
+setHDclassif.show = function(show){
+	
+	if(length(show) != 1 || !is.logical(show) || is.na(show)){
+		stop("Argument 'show' must be a single logical.")
+	}
+	
+	options("HDclassif.show" = show)
+	
+}
+
+#' @rdname setHDclassif.show
+"getHDclassif.show"
+
+getHDclassif.show = function(){
+	
+	x = getOption("HDclassif.show")
+	if(length(x) != 1 || !is.logical(x) || is.na(x)){
+		stop("The value of getOption(\"HDclassif.show\") is currently not legal. Please use function setHDclassif.show to set it to an appropriate value.")
+	}
+	
+	x
+}
+
 
 

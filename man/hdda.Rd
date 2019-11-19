@@ -4,10 +4,11 @@
 \alias{hdda}
 \title{High Dimensional Discriminant Analysis}
 \usage{
-hdda(data, cls, model = "AkjBkQkDk", graph = FALSE, d_select = "Cattell",
-  threshold = 0.2, com_dim = NULL, show = TRUE, scaling = FALSE,
-  cv.dim = 1:10, cv.threshold = c(0.001, 0.005, 0.05, 1:9 * 0.1),
-  cv.vfold = 10, LOO = FALSE, noise.ctrl = 1e-08, d)
+hdda(data, cls, model = "AkjBkQkDk", graph = FALSE,
+  d_select = "Cattell", threshold = 0.2, com_dim = NULL,
+  show = getHDclassif.show(), scaling = FALSE, cv.dim = 1:10,
+  cv.threshold = c(0.001, 0.005, 0.05, 1:9 * 0.1), cv.vfold = 10,
+  LOO = FALSE, noise.ctrl = 1e-08, d)
 }
 \arguments{
 \item{data}{A matrix or a data frame of observations, assuming the rows are the observations and the columns the variables. Note that NAs are not allowed.}
@@ -24,7 +25,7 @@ hdda(data, cls, model = "AkjBkQkDk", graph = FALSE, d_select = "Cattell",
 
 \item{com_dim}{It is used only for common dimensions models. The user can give the common dimension s/he wants. If used, it must be an integer. Its default is set to NULL.}
 
-\item{show}{Use \code{show = FALSE} to settle off the informations that may be printed. Default is TRUE.}
+\item{show}{Single logical. To diplay summary information on the results after the algorithm is done: set it to \code{TRUE}. By default it takes the value of \code{\link[HDclassif]{getHDclassif.show}} which is FALSE at the loading of the package. To permanently have \code{show=TRUE}, use \code{setHDclassif.show(TRUE)}.}
 
 \item{scaling}{Logical: whether to scale the dataset (mean=0 and standard-error=1 for each variable) or not. By default the data is not scaled.}
 

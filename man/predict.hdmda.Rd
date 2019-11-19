@@ -55,7 +55,3 @@ cls = wine[,1]; X = scale(wine[,-1])
 out = hdmda(X[1:100,],cls[1:100])
 res = predict(out,X[101:nrow(X),])
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
