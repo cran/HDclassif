@@ -460,7 +460,9 @@ plot.hdc <- function(x, method=NULL, threshold=NULL, noise.ctrl=1e-8, ...){
 #'
 #'Bouveyron, C. Girard, S. and Schmid, C. (2007) \dQuote{High-Dimensional Data Clustering}, \emph{Computational Statistics and Data Analysis}, vol. \bold{52} (1), pp. 502--519
 #'
-#'Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, \bold{46}(6), 1--29, url: \href{http://www.jstatsoft.org/v46/i06/}{http://www.jstatsoft.org/v46/i06/}
+#'Berge, L. Bouveyron, C. and Girard, S. (2012) \dQuote{HDclassif: An R Package for Model-Based 
+#' Clustering and Discriminant Analysis of High-Dimensional Data}, \emph{Journal of Statistical Software}, 
+#' \bold{46}(6), 1--29, url: \doi{10.18637/jss.v046.i06}
 #'
 #' @author
 #'Laurent Berge, Charles Bouveyron and Stephane Girard
@@ -613,97 +615,6 @@ print.hdc <- function(x, ...){
 	if(min(x$a, na.rm=TRUE)<0) cat("Information: a < 0\n")
 	if(min(x$b)<10e-6) cat("Information: b < 10e-6\n")
 }
-
-
-# "[[.hddc_all_results" <- function(x, y){
-# 	# input:
-# 	#  - x: a hddc_all_results element
-# 	#  - y: an index: either a positive integer, or a character
-# 	
-# 	print(y)
-# 	
-# 	# Some checks
-# 	if(length(y)>1) stop("Cannot extract more than one model with [[ method.")
-# 	
-# 	if(class(y) == "character"){
-# 		if(!y%in%names(x) || y=="data"){
-# 			warning("The model selected with [[ does not exist.")
-# 			return(NULL)
-# 		}
-# 	} else {
-# 		if(!is.numeric(y)) stop("The index of extraction must be an integer.")
-# 		if(y<1) stop("The index of extraction must be a positive integer.")
-# 		if(y%%1!=0) stop("The index of extraction must be a positive integer.")
-# 		
-# 		if(y>(length(x)-1)){
-# 			warning("The model selected with [[ does not exist.")
-# 			return(NULL)
-# 		}
-# 	}
-# 	class(x) = "list"
-# 	res = x[[y]]
-# 	res$data = x$data
-# 	class(res) = "hdc"
-# 	return(res)
-# }
-# 
-# "$.hddc_all_results" = function(x, y){
-# 	
-# 	# Some checks
-# 	if(!y%in%names(x) || y=="data"){
-# 		warning("The model selected with $ does not exist.")
-# 		return(NULL)
-# 	}
-# 	
-# 	class(x) = "list"
-# 	res = x[[y]]
-# 	res$data = x$data
-# 	class(res) = "hdc"
-# 	return(res)
-# }
-# 
-# "[.hddc_all_results" <- function(x, y){
-# 	# input:
-# 	#  - x: a hddc_all_results element
-# 	#  - y: a vector of indices: either a positive integer, or a character
-# 	
-# 	print(y)
-# 	
-# 	# Some checks
-# 	n = length(x)
-# 	
-# 	if(class(y) == "character"){
-# 		y = intersect(y, names(x)[1:(n-1)])
-# 		
-# 		if(length(y_clean)==0){
-# 			warning("Not any model selected with [ does exist.")
-# 			return(NULL)
-# 		}
-# 		
-# 		if(length(y_clean)!=length(y)){
-# 			qui = setdiff(y, y_clean)
-# 			warning("Some models extracted with [ were discarded (e.g. ", qui[1], ").")
-# 		}
-# 	} else {
-# 		y_clean = intersect(y, 1:(n-1))
-# 		
-# 		if(length(y_clean)==0){
-# 			warning("Not any model selected with [ does exist.")
-# 			return(NULL)
-# 		}
-# 		
-# 		if(length(y_clean)!=length(y)){
-# 			qui = setdiff(y, y_clean)
-# 			warning("Some models extracted with [ were discarded (e.g. ", qui[1], ").")
-# 		}
-# 	}
-# 	
-# 	class(x) = "list"
-# 	res = x[y_clean]
-# 	res$data = x$data
-# 	class(res) = "hddc_all_results"
-# 	return(res)
-# }
 
 ####
 #### PLOT ####
