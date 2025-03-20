@@ -164,7 +164,7 @@ hdclassif_bic <- function(par, p, data=NULL){
 		eps <- sum(prop*d)
 		n_max <- if(model%in%c("ABQD", "AJBQD")) length(par$ev) else ncol(par$ev)
 		b <- b*(n_max-eps)/(p-eps)
-		b <- rep(b, length=K)
+		b <- rep(b, length.out=K)
 	}	
 	
 	if (length(a)==1){
@@ -531,7 +531,7 @@ predict.hdc <- function(object, data, cls=NULL, ...){
 	}
 	
 	if(length(b)==1){
-		b <- rep(b, length=K)
+		b <- rep(b, length.out = K)
 	}
 	
 	if(length(a) == 1){

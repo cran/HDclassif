@@ -3,6 +3,12 @@
 
 \title{News for \R Package \pkg{HDclassif}}
 
+\section{Changes in version 2.2.2 (2025-03-20)}{
+	\itemize{
+    \item Fix how to compute the posterior of \code{hdmda} objects in the presence of large values (ie improve numerical stability).
+	}
+}
+
 \section{Changes in version 2.2.1 (2023-08-21)}{
 	\itemize{
 		\item Update the maintainer's email address.

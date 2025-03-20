@@ -43,7 +43,8 @@ predict.hdmda <- function(object, X, ...){
 		b[b<1e-6] <- 1e-6
 		
 		# Modification des elements
-		if(length(b)==1) b <- rep(b, length=K)
+		if(length(b)==1) b <- rep(b, length.out = K)
+		
 		if (length(a)==1) a <- matrix(a, K, max(d))
 		else if (length(a)==K) a <- matrix(a, K, max(d))
 		else if (par$model=='AJBQD') a <- matrix(a, K, d[1], byrow=TRUE)
@@ -63,19 +64,23 @@ predict.hdmda <- function(object, X, ...){
 				K_pen[i, ] <- rowSums(A^2)+1/b[i]*rowSums(B^2)+s+(p-d[i])*log(b[i])-2*log(prop[i])+p*log(2*pi)
 			}
 		}
-		K_pen = -1/2*t(K_pen)
-		P[, c] = object$alpha[c] * rowSums(exp(K_pen))
+		
+		K_pen = -1/2 * t(K_pen)
+		Kmax = max(K_pen)
+    P[, c] = log(object$alpha[c]) + log(rowSums(exp(K_pen - Kmax))) + Kmax
 	}
 	
 	PP <- matrix(NA, N, C)
 	for (c in 1:C) {
-		PP[, c] = P[, c] / rowSums(P)
+		PP[, c] = 1 / rowSums(exp((P - P[,c])))
 	}
 	
 	if (!is.null(object$kname)) {
 		class = object$kname[max.col(PP)]
-	} else {class = max.col(PP)}
+	} else {
+	  class = max.col(PP)
+	}
 	
-	list(class=class, posterior=PP)
+	list(class = class, posterior = PP)
 }
 

@@ -76,31 +76,31 @@ Some information on the signification of the model names:
 \describe{
 	\item{Akj are the parameters of the classes subspaces:}{
 		\itemize{
-		\item{if Akj: each class has its parameters and there is one parameter for each dimension}
-		\item{if Ak: the classes have different parameters but there is only one per class}
-		\item{if Aj: all the classes have the same parameters for each dimension (it's a particular case with a common orientation matrix)}
-		\item{if A: all classes have the same one parameter}
+		\item if Akj: each class has its parameters and there is one parameter for each dimension
+		\item if Ak: the classes have different parameters but there is only one per class
+		\item if Aj: all the classes have the same parameters for each dimension (it's a particular case with a common orientation matrix)
+		\item if A: all classes have the same one parameter
 		}
 	}
 
 	\item{Bk are the noises of the classes subspaces:}{
 		\itemize{
-			\item{If Bk: each class has its proper noise}
-			\item{if B:  all classes have the same noise}
+			\item If Bk: each class has its proper noise
+			\item if B:  all classes have the same noise
 		}
 	}
 
 	\item{Qk is the orientation matrix of each class:}{ 
 		\itemize{
-			\item{if Qk: all classes have its proper orientation matrix}
-			\item{if Q: all classes have the same orientation matrix}
+			\item if Qk: all classes have its proper orientation matrix
+			\item if Q: all classes have the same orientation matrix
 		}
 	}
 	
 	\item{Dk is the intrinsic dimension of each class:}{ 
 		\itemize{
-			\item{if Dk: the dimensions are free and proper to each class}
-			\item{if D: the dimension is common to all classes}
+			\item if Dk: the dimensions are free and proper to each class
+			\item if D: the dimension is common to all classes
 		}
 	}
 }
@@ -117,7 +117,7 @@ AjBQD \tab 13 \tab  \tab ABQD \tab 14
 }
 
 The parameter d, is used to select the intrinsic dimensions of the subclasses. Here are his definictions:
-		\itemize{
+		\describe{
 			\item{\dQuote{Cattell}:}{
 				The Cattell's scree-test is used to gather the intrinsic dimension of each class. If the model is of common dimension (models 7 to 14), the scree-test is done on the covariance matrix of the whole dataset.
 			}
